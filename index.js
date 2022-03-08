@@ -4,10 +4,10 @@ const session = require('express-session');
 const path = require('path');
 
 const connection = mysql.createConnection({
-	host     : 'localhost',
-	user     : 'root',
-	password : '',
-	database : 'nodelogin'
+	host     : 'mysql-bellone.alwaysdata.net',
+	user     : 'bellone',
+	password : 'nerfakshan',
+	database : 'bellone_login'
 });
 
 const app = express();
