@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 
-
+/*
 app.post('/send', async function (request, res, next) {
     var youremail = request.body.youremail
     var yoursubject = request.body.yoursubject
@@ -33,28 +33,10 @@ app.post('/send', async function (request, res, next) {
 }, function (req, res) {
     res.redirect('/')
 });
-
+*/
 
 app.use(helmet())
 app.use(compression())
-
-// server-sent event stream
-app.get('/events', function (req, res) {
-    res.setHeader('Content-Type', 'text/event-stream')
-    res.setHeader('Cache-Control', 'no-cache')
-
-    // send a ping approx every 2 seconds
-    var timer = setInterval(function () {
-        res.write('data: ping\n\n')
-
-        // !!! this is the important part
-        res.flush()
-    }, 2000)
-
-    res.on('close', function () {
-        clearInterval(timer)
-    })
-});
 
 colors.setTheme({ //mettre des couleur sur le console.log
     silly: 'rainbow',
@@ -74,28 +56,6 @@ console.log(('Langue:' + moment.locale('fr') + 'ançaise\n').silly + //Langue fr
     '---------------------------------'.verbose +
     '\nDémarré le :\n'.info +
     moment().format('llll').prompt + `\nPort: ${port}`.info)
-
-
-app.get('/cv', function (req, res) {
-    var file = path.join(__dirname, './Page web/cv.pdf');
-    res.download(file, function (err) {
-        if (err) {
-            console.log("Error");
-            console.log(err);
-        } else {
-            console.log("Success");
-        }
-    });
-});
-
-
-var exec = require("child_process").exec;
-app.get('/db', function (req, res) {
-    exec("php ./php/db.php", function (error, stdout, stderr) {
-        res.send(stdout);
-        console.log(error)
-    });
-});
 
 function makeid(length) {
     var result = '';
@@ -133,15 +93,6 @@ app.get('/notexist', function (req, res) {
 
 
 
-
-ms = require('mediaserver'); //ms require
-
-//chargement pour toute les musique
-app.get('/portal2end.mp3', function (req, res) {
-    ms.pipe(req, res, "./Page web/audioplayer/Portal2end.mp3");
-});
-
-
 var morgan = require('morgan'); // Charge le middleware de logging
 var favicon = require('serve-favicon'); // Charge le middleware de favicon
 
@@ -156,6 +107,7 @@ app.use(morgan('combined')) // Active le middleware de logging
         });
     });
 
+    /*
 var nodemailer = require('nodemailer');
 
 
@@ -183,3 +135,4 @@ async function main(email, sujet, msg) {
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
 }
+*/
