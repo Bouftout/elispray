@@ -4,7 +4,8 @@
   "description": "Project de groupe",
   "main": "index.js",
   "scripts": {
-    "test": "nodemon index.js"
+    "test": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,6 @@
     "cheerio": "^1.0.0-rc.10",
     "express": "^4.17.3",
     "express-session": "^1.17.2",
-    "htmlparser2": "^7.2.0",
     "mysql": "^2.18.1",
     "path": "^0.12.7"
   }
