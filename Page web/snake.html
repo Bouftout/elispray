@@ -68,21 +68,9 @@ function getTheme () {
         document.getElementById('game-area').focus();
     }, 10);
 }
-
-if (navigator.onLine && window.location.hostname === 'patorjk.com') {
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-3312460-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-}
 </script>
 </head>
-<body>
+<body onload="onload()">
     <div class="snake-toolbar">
       <div style="display:inline-block;margin-right:10px;">
         <span>Theme:</span>
@@ -103,7 +91,7 @@ if (navigator.onLine && window.location.hostname === 'patorjk.com') {
             <option value="75" selected>Medium</option>
             <option value="50">Hard</option>
             <option value="25">Impossible</option>
-            <option value="110">Rush</option>
+            <option value="10">Rush</option>
         </select>
       </div>
       <button onclick="go_full_screen()">Full Screen</button><br />
@@ -125,6 +113,9 @@ if (navigator.onLine && window.location.hostname === 'patorjk.com') {
     <script type="text/javascript" src="./js/snake.js"></script>
     <script type="text/javascript" src="./js/init.js"></script>
     <script type="text/javascript">
+      function onload(){
+        document.getElementById("highscore").value = localStorage.jsSnakeHighScore;
+      }
       function go_full_screen() {
         var elem = document.documentElement;
         try {
@@ -143,5 +134,15 @@ if (navigator.onLine && window.location.hostname === 'patorjk.com') {
         }
       }
   </script>
+
+			<form action="/highscore"  method="post">
+				<label for="highscore">
+					<!-- font awesome icon -->
+					<i class="fas fa-highscore"></i>
+				</label>
+				<input type="highscore" name="highscore" placeholder="highscore" id="highscore" readonly required>
+        <input id="highscorebtn" type="submit" value="highscore">
+			</form>
+<a href="/gg">Go to high-score</a>
 </body>
 </html>

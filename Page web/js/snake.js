@@ -19,13 +19,13 @@ window.SNAKE = SNAKE; // this will allow us to access the game in other JS files
 * @param {Function} funct The function to execute when the event is triggered.
 * @param {Boolean} evtCapturing True to do event capturing, false to do event bubbling.
 */
-SNAKE.addEventListener = (function() {
+SNAKE.addEventListener = (function () {
     if (window.addEventListener) {
-        return function(obj, event, funct, evtCapturing) {
+        return function (obj, event, funct, evtCapturing) {
             obj.addEventListener(event, funct, evtCapturing);
         };
     } else if (window.attachEvent) {
-        return function(obj, event, funct) {
+        return function (obj, event, funct) {
             obj.attachEvent("on" + event, funct);
         };
     }
@@ -39,13 +39,13 @@ SNAKE.addEventListener = (function() {
 * @param {Boolean} evtCapturing True if event capturing was done, false otherwise.
 */
 
-SNAKE.removeEventListener = (function() {
+SNAKE.removeEventListener = (function () {
     if (window.removeEventListener) {
-        return function(obj, event, funct, evtCapturing) {
+        return function (obj, event, funct, evtCapturing) {
             obj.removeEventListener(event, funct, evtCapturing);
         };
     } else if (window.detachEvent) {
-        return function(obj, event, funct) {
+        return function (obj, event, funct) {
             obj.detachEvent("on" + event, funct);
         };
     }
@@ -58,7 +58,7 @@ SNAKE.removeEventListener = (function() {
 * @namespace SNAKE
 * @param {Object} config The configuration object for the class. Contains playingBoard (the SNAKE.Board that this snake resides in), startRow and startCol.
 */
-SNAKE.Snake = SNAKE.Snake || (function() {
+SNAKE.Snake = SNAKE.Snake || (function () {
 
     // -------------------------------------------------------------------------
     // Private static variables and methods
@@ -67,7 +67,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
     var instanceNumber = 0;
     var blockPool = [];
 
-    var SnakeBlock = function() {
+    var SnakeBlock = function () {
         this.elm = null;
         this.elmStyle = null;
         this.row = -1;
@@ -84,16 +84,16 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             currentIndex = 0,
             ii;
         for (ii in myObj) {
-            if (myObj[ii].elm.currentStyle){
-                currentIndex = parseFloat(myObj[ii].elm.style["z-index"],10);
-            }else if(window.getComputedStyle) {
-                currentIndex = parseFloat(document.defaultView.getComputedStyle(myObj[ii].elm,null).getPropertyValue("z-index"),10);
+            if (myObj[ii].elm.currentStyle) {
+                currentIndex = parseFloat(myObj[ii].elm.style["z-index"], 10);
+            } else if (window.getComputedStyle) {
+                currentIndex = parseFloat(document.defaultView.getComputedStyle(myObj[ii].elm, null).getPropertyValue("z-index"), 10);
             }
-            if(!isNaN(currentIndex) && currentIndex > highestIndex){
+            if (!isNaN(currentIndex) && currentIndex > highestIndex) {
                 highestIndex = currentIndex;
             }
         }
-        return(highestIndex+1);
+        return (highestIndex + 1);
     }
 
     // -------------------------------------------------------------------------
@@ -106,9 +106,9 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             startRow - The row the snake should start on.
             startCol - The column the snake should start on.
     */
-    return function(config) {
+    return function (config) {
 
-        if (!config||!config.playingBoard) {return;}
+        if (!config || !config.playingBoard) { return; }
         if (localStorage.jsSnakeHighScore === undefined) localStorage.setItem('jsSnakeHighScore', 0);
 
         // ----- private variables -----
@@ -130,33 +130,32 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             isDead = false,
             isPaused = false;
 
-            function setModeListener (mode, speed) {
-                document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
-            }
+        function setModeListener(mode, speed) {
+            document.getElementById(mode).addEventListener('click', function () { snakeSpeed = speed; });
+        }
 
-            var modeDropdown = document.getElementById('selectMode');
-            if ( modeDropdown ) {
-                modeDropdown.addEventListener('change', function(evt) {
-                    evt = evt || {};
-                    var val = evt.target ? parseInt(evt.target.value) : 75;
-                    
-                    if (isNaN(val)) {
-                        val = 75;
-                    } else if (val < 25) {
-                        val = 75
-                    }
+        var modeDropdown = document.getElementById('selectMode');
+        if (modeDropdown) {
+            modeDropdown.addEventListener('change', function (evt) {
+                evt = evt || {};
+                var val = evt.target ? parseInt(evt.target.value) : 5;
 
-                    snakeSpeed = val;
+                if (isNaN(val)) {
+                    val = 75;
+                } else if (val < 25) {
+                    val = 5
+                }
+                snakeSpeed = val;
 
-                    setTimeout(function() {
-                        document.getElementById('game-area').focus();
-                    }, 10);
-                });
-            }
+                setTimeout(function () {
+                    document.getElementById('game-area').focus();
+                }, 10);
+            });
+        }
 
-            //setModeListener('Easy', 100);
-            //setModeListener('Medium', 75);
-            //setModeListener('Difficult', 50);
+        //setModeListener('Easy', 100);
+        //setModeListener('Medium', 75);
+        //setModeListener('Difficult', 50);
 
         // ----- public variables -----
         me.snakeBody = {};
@@ -167,7 +166,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         me.snakeBody["b0"].yPos = me.snakeBody["b0"].col * playingBoard.getBlockHeight();
         me.snakeBody["b0"].elm = createSnakeElement();
         me.snakeBody["b0"].elmStyle = me.snakeBody["b0"].elm.style;
-        playingBoard.getBoardContainer().appendChild( me.snakeBody["b0"].elm );
+        playingBoard.getBoardContainer().appendChild(me.snakeBody["b0"].elm);
         me.snakeBody["b0"].elm.style.left = me.snakeBody["b0"].xPos + "px";
         me.snakeBody["b0"].elm.style.top = me.snakeBody["b0"].yPos + "px";
         me.snakeBody["b0"].next = me.snakeBody["b0"];
@@ -176,7 +175,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         me.snakeLength = 1;
         me.snakeHead = me.snakeBody["b0"];
         me.snakeTail = me.snakeBody["b0"];
-        me.snakeHead.elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/,'');
+        me.snakeHead.elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/, '');
         me.snakeHead.elm.id = "snake-snakehead-alive";
         me.snakeHead.elm.className += " snake-snakebody-alive";
 
@@ -196,17 +195,17 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             var tempBlock;
             var tempNode = createSnakeElement();
 
-            for (var ii = 1; ii < num; ii++){
+            for (var ii = 1; ii < num; ii++) {
                 tempBlock = new SnakeBlock();
                 tempBlock.elm = tempNode.cloneNode(true);
                 tempBlock.elmStyle = tempBlock.elm.style;
-                playingBoard.getBoardContainer().appendChild( tempBlock.elm );
+                playingBoard.getBoardContainer().appendChild(tempBlock.elm);
                 blockPool[blockPool.length] = tempBlock;
             }
 
             tempBlock = new SnakeBlock();
             tempBlock.elm = tempNode;
-            playingBoard.getBoardContainer().appendChild( tempBlock.elm );
+            playingBoard.getBoardContainer().appendChild(tempBlock.elm);
             blockPool[blockPool.length] = tempBlock;
         }
 
@@ -230,10 +229,10 @@ SNAKE.Snake = SNAKE.Snake || (function() {
 
         // ----- public methods -----
 
-        me.setPaused = function(val) {
+        me.setPaused = function (val) {
             isPaused = val;
         };
-        me.getPaused = function() {
+        me.getPaused = function () {
             return isPaused;
         };
 
@@ -249,8 +248,8 @@ SNAKE.Snake = SNAKE.Snake || (function() {
                   3   1
                     2
         */
-        me.handleArrowKeys = function(keyNum) {
-             if (isDead || (isPaused && !config.premoveOnPause)) {return;}
+        me.handleArrowKeys = function (keyNum) {
+            if (isDead || (isPaused && !config.premoveOnPause)) { return; }
 
             var snakeLength = me.snakeLength;
 
@@ -281,7 +280,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             {
                 preMove = directionFound;
             }
-            if (Math.abs(directionFound - lastMove) !== 2 && (isFirstMove || isPaused) || isFirstGameMove )  // Prevent snake from turning 180 degrees
+            if (Math.abs(directionFound - lastMove) !== 2 && (isFirstMove || isPaused) || isFirstGameMove)  // Prevent snake from turning 180 degrees
             {
                 currentDirection = directionFound;
                 isFirstMove = false;
@@ -293,14 +292,14 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * This method is executed for each move of the snake. It determines where the snake will go and what will happen to it. This method needs to run quickly.
         * @method go
         */
-        me.go = function() {
+        me.go = function () {
 
             var oldHead = me.snakeHead,
                 newHead = me.snakeTail,
                 grid = playingBoard.grid; // cache grid for quicker lookup
 
             if (isPaused === true) {
-                setTimeout(function(){me.go();}, snakeSpeed);
+                setTimeout(function () { me.go(); }, snakeSpeed);
                 return;
             }
 
@@ -308,11 +307,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             me.snakeHead = newHead;
 
             // clear the old board position
-            if ( grid[newHead.row] && grid[newHead.row][newHead.col] ) {
+            if (grid[newHead.row] && grid[newHead.row][newHead.col]) {
                 grid[newHead.row][newHead.col] = 0;
             }
 
-            if (currentDirection !== -1){
+            if (currentDirection !== -1) {
                 lastMove = currentDirection;
                 if (preMove !== -1)  // If the user queued up another move after the current one
                 {
@@ -327,24 +326,24 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             newHead.xPos = oldHead.xPos + xPosShift[lastMove];
             newHead.yPos = oldHead.yPos + yPosShift[lastMove];
 
-            if ( !newHead.elmStyle ) {
+            if (!newHead.elmStyle) {
                 newHead.elmStyle = newHead.elm.style;
             }
 
             newHead.elmStyle.left = newHead.xPos + "px";
             newHead.elmStyle.top = newHead.yPos + "px";
-            if(me.snakeLength>1){
-                newHead.elm.id="snake-snakehead-alive";
+            if (me.snakeLength > 1) {
+                newHead.elm.id = "snake-snakehead-alive";
                 oldHead.elm.id = "";
             }
-            
-            
+
+
 
             // check the new spot the snake moved into
 
             if (grid[newHead.row][newHead.col] === 0) {
                 grid[newHead.row][newHead.col] = 1;
-                setTimeout(function(){me.go();}, snakeSpeed);
+                setTimeout(function () { me.go(); }, snakeSpeed);
             } else if (grid[newHead.row][newHead.col] > 0) {
                 me.handleDeath();
             } else if (grid[newHead.row][newHead.col] === playingBoard.getGridFoodValue()) {
@@ -353,7 +352,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
                     me.handleWin();
                     return;
                 }
-                setTimeout(function(){me.go();}, snakeSpeed);
+                setTimeout(function () { me.go(); }, snakeSpeed);
             }
         };
 
@@ -363,9 +362,9 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * @return {bool} Whether a new food was able to spawn (true)
         *   or not (false) after the snake eats food.
         */
-        me.eatFood = function() {
+        me.eatFood = function () {
             if (blockPool.length <= growthIncr) {
-                createBlocks(growthIncr*2);
+                createBlocks(growthIncr * 2);
             }
             var blocks = blockPool.splice(0, growthIncr);
 
@@ -376,7 +375,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
                 index = "b" + me.snakeLength++;
                 me.snakeBody[index] = blocks[ii];
                 me.snakeBody[index].prev = prevNode;
-                me.snakeBody[index].elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/,'')
+                me.snakeBody[index].elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/, '')
                 me.snakeBody[index].elm.className += " snake-snakebody-alive";
                 prevNode.next = me.snakeBody[index];
                 prevNode = me.snakeBody[index];
@@ -394,9 +393,8 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             var selectDropDown = document.getElementById("selectMode");
             var selectedOption = selectDropDown.options[selectDropDown.selectedIndex];
 
-            if(selectedOption.text.localeCompare("Rush") == 0)
-            {
-                snakeSpeed > 30 ? snakeSpeed -=5 : snakeSpeed = 30;
+            if (selectedOption.text.localeCompare("Rush") == 0) {
+                snakeSpeed > 30 ? snakeSpeed -= 5 : snakeSpeed = snakeSpeed - 1;
             }
 
             return true;
@@ -406,11 +404,11 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * This method handles what happens when the snake dies.
         * @method handleDeath
         */
-        me.handleDeath = function() {
+        me.handleDeath = function () {
             //Reset speed
             var selectedSpeed = document.getElementById("selectMode").value;
             snakeSpeed = parseInt(selectedSpeed);
-            
+
             handleEndCondition(playingBoard.handleDeath);
         };
 
@@ -418,7 +416,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * This method handles what happens when the snake wins.
         * @method handleDeath
         */
-        me.handleWin = function() {
+        me.handleWin = function () {
             handleEndCondition(playingBoard.handleWin);
         };
 
@@ -426,7 +424,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * This method sets a flag that lets the snake be alive again.
         * @method rebirth
         */
-        me.rebirth = function() {
+        me.rebirth = function () {
             isDead = false;
             isFirstMove = true;
             isFirstGameMove = true;
@@ -437,8 +435,8 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         * This method reset the snake so it is ready for a new game.
         * @method reset
         */
-        me.reset = function() {
-            if (isDead === false) {return;}
+        me.reset = function () {
+            if (isDead === false) { return; }
 
             var blocks = [],
                 curNode = me.snakeHead.next,
@@ -458,12 +456,12 @@ SNAKE.Snake = SNAKE.Snake || (function() {
             for (var ii = 0; ii < blocks.length; ii++) {
                 blocks[ii].elm.style.left = "-1000px";
                 blocks[ii].elm.style.top = "-1000px";
-                blocks[ii].elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/,'')
+                blocks[ii].elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/, '')
                 blocks[ii].elm.className += " snake-snakebody-alive";
             }
 
             blockPool.concat(blocks);
-            me.snakeHead.elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/,'')
+            me.snakeHead.elm.className = me.snakeHead.elm.className.replace(/\bsnake-snakebody-dead\b/, '')
             me.snakeHead.elm.className += " snake-snakebody-alive";
             me.snakeHead.elm.id = "snake-snakehead-alive";
             me.snakeHead.row = config.startRow || 1;
@@ -477,7 +475,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
         // ---------------------------------------------------------------------
         // Initialize
         // ---------------------------------------------------------------------
-        createBlocks(growthIncr*2);
+        createBlocks(growthIncr * 2);
         xPosShift[0] = 0;
         xPosShift[1] = playingBoard.getBlockWidth();
         xPosShift[2] = 0;
@@ -498,7 +496,7 @@ SNAKE.Snake = SNAKE.Snake || (function() {
 * @param {Object} config The configuration object for the class. Contains playingBoard (the SNAKE.Board that this food resides in).
 */
 
-SNAKE.Food = SNAKE.Food || (function() {
+SNAKE.Food = SNAKE.Food || (function () {
 
     // -------------------------------------------------------------------------
     // Private static variables and methods
@@ -506,8 +504,8 @@ SNAKE.Food = SNAKE.Food || (function() {
 
     var instanceNumber = 0;
 
-    function getRandomPosition(x, y){
-        return Math.floor(Math.random()*(y+1-x)) + x;
+    function getRandomPosition(x, y) {
+        return Math.floor(Math.random() * (y + 1 - x)) + x;
     }
 
     // -------------------------------------------------------------------------
@@ -518,9 +516,9 @@ SNAKE.Food = SNAKE.Food || (function() {
         config options:
             playingBoard - the SnakeBoard that this object belongs too.
     */
-    return function(config) {
+    return function (config) {
 
-        if (!config||!config.playingBoard) {return;}
+        if (!config || !config.playingBoard) { return; }
 
         // ----- private variables -----
 
@@ -530,7 +528,7 @@ SNAKE.Food = SNAKE.Food || (function() {
         var myId = instanceNumber++;
 
         var elmFood = document.createElement("div");
-        elmFood.setAttribute("id", "snake-food-"+myId);
+        elmFood.setAttribute("id", "snake-food-" + myId);
         elmFood.className = "snake-food-block";
         elmFood.style.width = playingBoard.getBlockWidth() + "px";
         elmFood.style.height = playingBoard.getBlockHeight() + "px";
@@ -544,7 +542,7 @@ SNAKE.Food = SNAKE.Food || (function() {
         * @method getFoodElement
         * @return {DOM Element} The div the represents the food.
         */
-        me.getFoodElement = function() {
+        me.getFoodElement = function () {
             return elmFood;
         };
 
@@ -553,18 +551,18 @@ SNAKE.Food = SNAKE.Food || (function() {
         * @method randomlyPlaceFood
         * @return {bool} Whether a food was able to spawn (true) or not (false).
         */
-        me.randomlyPlaceFood = function() {
+        me.randomlyPlaceFood = function () {
             // if there exist some food, clear its presence from the board
-            if (playingBoard.grid[fRow] && playingBoard.grid[fRow][fColumn] === playingBoard.getGridFoodValue()){
+            if (playingBoard.grid[fRow] && playingBoard.grid[fRow][fColumn] === playingBoard.getGridFoodValue()) {
                 playingBoard.grid[fRow][fColumn] = 0;
             }
 
             var row = 0, col = 0, numTries = 0;
 
-            var maxRows = playingBoard.grid.length-1;
-            var maxCols = playingBoard.grid[0].length-1;
+            var maxRows = playingBoard.grid.length - 1;
+            var maxCols = playingBoard.grid[0].length - 1;
 
-            while (playingBoard.grid[row][col] !== 0){
+            while (playingBoard.grid[row][col] !== 0) {
                 row = getRandomPosition(1, maxRows);
                 col = getRandomPosition(1, maxCols);
 
@@ -572,7 +570,7 @@ SNAKE.Food = SNAKE.Food || (function() {
                 // instead of freezing, exit out (and return false to indicate
                 // that the player beat the game)
                 numTries++;
-                if (numTries > 20000){
+                if (numTries > 20000) {
                     return false;
                 }
             }
@@ -595,7 +593,7 @@ SNAKE.Food = SNAKE.Food || (function() {
 * @param {Object} config The configuration object for the class. Set fullScreen equal to true if you want the game to take up the full screen, otherwise, set the top, left, width and height parameters.
 */
 
-SNAKE.Board = SNAKE.Board || (function() {
+SNAKE.Board = SNAKE.Board || (function () {
 
     // -------------------------------------------------------------------------
     // Private static variables and methods
@@ -609,28 +607,28 @@ SNAKE.Board = SNAKE.Board || (function() {
             currentIndex = 0,
             ii;
         for (ii in myObj) {
-            if (myObj[ii].elm.currentStyle){
-                currentIndex = parseFloat(myObj[ii].elm.style["z-index"],10);
-            }else if(window.getComputedStyle) {
-                currentIndex = parseFloat(document.defaultView.getComputedStyle(myObj[ii].elm,null).getPropertyValue("z-index"),10);
+            if (myObj[ii].elm.currentStyle) {
+                currentIndex = parseFloat(myObj[ii].elm.style["z-index"], 10);
+            } else if (window.getComputedStyle) {
+                currentIndex = parseFloat(document.defaultView.getComputedStyle(myObj[ii].elm, null).getPropertyValue("z-index"), 10);
             }
-            if(!isNaN(currentIndex) && currentIndex > highestIndex){
+            if (!isNaN(currentIndex) && currentIndex > highestIndex) {
                 highestIndex = currentIndex;
             }
         }
-        return(highestIndex+1);
+        return (highestIndex + 1);
     }
 
     /*
         This function returns the width of the available screen real estate that we have
     */
-    function getClientWidth(){
+    function getClientWidth() {
         var myWidth = 0;
-        if( typeof window.innerWidth === "number" ) {
+        if (typeof window.innerWidth === "number") {
             myWidth = window.innerWidth;//Non-IE
-        } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+        } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
             myWidth = document.documentElement.clientWidth;//IE 6+ in 'standards compliant mode'
-        } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+        } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
             myWidth = document.body.clientWidth;//IE 4 compatible
         }
         return myWidth;
@@ -638,13 +636,13 @@ SNAKE.Board = SNAKE.Board || (function() {
     /*
         This function returns the height of the available screen real estate that we have
     */
-    function getClientHeight(){
+    function getClientHeight() {
         var myHeight = 0;
-        if( typeof window.innerHeight === "number" ) {
+        if (typeof window.innerHeight === "number") {
             myHeight = window.innerHeight;//Non-IE
-        } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+        } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
             myHeight = document.documentElement.clientHeight;//IE 6+ in 'standards compliant mode'
-        } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+        } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
             myHeight = document.body.clientHeight;//IE 4 compatible
         }
         return myHeight;
@@ -654,7 +652,7 @@ SNAKE.Board = SNAKE.Board || (function() {
     // Contructor + public and private definitions
     // -------------------------------------------------------------------------
 
-    return function(inputConfig) {
+    return function (inputConfig) {
 
         // --- private variables ---
         var me = this,
@@ -685,7 +683,7 @@ SNAKE.Board = SNAKE.Board || (function() {
             elmPlayingField.setAttribute("id", "playingField");
             elmPlayingField.className = "snake-playing-field";
 
-            SNAKE.addEventListener(elmPlayingField, "click", function() {
+            SNAKE.addEventListener(elmPlayingField, "click", function () {
                 elmContainer.focus();
             }, false);
 
@@ -709,11 +707,11 @@ SNAKE.Board = SNAKE.Board || (function() {
             elmTryAgain = createTryAgainElement();
             elmWin = createWinElement();
 
-            SNAKE.addEventListener( elmContainer, "keyup", function(evt) {
+            SNAKE.addEventListener(elmContainer, "keyup", function (evt) {
                 if (!evt) var evt = window.event;
                 evt.cancelBubble = true;
-                if (evt.stopPropagation) {evt.stopPropagation();}
-                if (evt.preventDefault) {evt.preventDefault();}
+                if (evt.stopPropagation) { evt.stopPropagation(); }
+                if (evt.preventDefault) { evt.preventDefault(); }
                 return false;
             }, false);
 
@@ -729,9 +727,9 @@ SNAKE.Board = SNAKE.Board || (function() {
             elmContainer.appendChild(elmTryAgain);
             elmContainer.appendChild(elmWin);
 
-            mySnake = new SNAKE.Snake({playingBoard:me,startRow:2,startCol:2,premoveOnPause: config.premoveOnPause});
-            myFood = new SNAKE.Food({playingBoard: me});
-            
+            mySnake = new SNAKE.Snake({ playingBoard: me, startRow: 2, startCol: 2, premoveOnPause: config.premoveOnPause });
+            myFood = new SNAKE.Food({ playingBoard: me });
+
             elmWelcome.style.zIndex = 1000;
         }
         function maxBoardWidth() {
@@ -742,7 +740,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         }
 
         function createWelcomeElement() {
-             var tmpElm = document.createElement("div");
+            var tmpElm = document.createElement("div");
             tmpElm.id = "sbWelcome" + myId;
             tmpElm.className = "snake-welcome-dialog";
 
@@ -754,14 +752,14 @@ SNAKE.Board = SNAKE.Board || (function() {
             welcomeTxt.innerHTML = "JavaScript Snake<p></p>Use the <strong>arrow keys</strong> on your keyboard to play the game. " + fullScreenText + "<p></p>";
             var welcomeStart = document.createElement("button");
             welcomeStart.appendChild(document.createTextNode("Play Game"));
-            var loadGame = function() {
+            var loadGame = function () {
                 SNAKE.removeEventListener(window, "keyup", kbShortcut, false);
                 tmpElm.style.display = "none";
                 me.setBoardState(1);
                 me.getBoardContainer().focus();
             };
 
-            var kbShortcut = function(evt) {
+            var kbShortcut = function (evt) {
                 if (!evt) var evt = window.event;
                 var keyNum = (evt.which) ? evt.which : evt.keyCode;
                 if (keyNum === 32 || keyNum === 13) {
@@ -775,7 +773,6 @@ SNAKE.Board = SNAKE.Board || (function() {
             tmpElm.appendChild(welcomeStart);
             return tmpElm;
         }
-
         function createGameEndElement(message, elmId, elmClassName) {
             var tmpElm = document.createElement("div");
             tmpElm.id = elmId + myId;
@@ -786,7 +783,9 @@ SNAKE.Board = SNAKE.Board || (function() {
             var gameEndStart = document.createElement("button");
             gameEndStart.appendChild(document.createTextNode("Play Again?"));
 
-            var reloadGame = function () {
+
+
+            var reloadGame = function () {               
                 tmpElm.style.display = "none";
                 me.resetBoard();
                 me.setBoardState(1);
@@ -810,11 +809,11 @@ SNAKE.Board = SNAKE.Board || (function() {
         }
 
         function createTryAgainElement() {
-            return createGameEndElement("You died :(", "sbTryAgain", "snake-try-again-dialog");
+            return createGameEndElement("Tu est mort ! :(<br>N'oubliez pas d'envoyer votre score avec le bouton en bas de la page", "sbTryAgain", "snake-try-again-dialog");
         }
 
         function createWinElement() {
-            return createGameEndElement("You win! :D", "sbWin", "snake-win-dialog");
+            return createGameEndElement("GG WIN! :D", "sbWin", "snake-win-dialog");
         }
 
         function handleEndCondition(elmDialog) {
@@ -830,7 +829,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         // public functions
         // ---------------------------------------------------------------------
 
-        me.setPaused = function(val) {
+        me.setPaused = function (val) {
             isPaused = val;
             mySnake.setPaused(val);
             if (isPaused) {
@@ -839,7 +838,7 @@ SNAKE.Board = SNAKE.Board || (function() {
                 elmPauseScreen.style.display = "none";
             }
         };
-        me.getPaused = function() {
+        me.getPaused = function () {
             return isPaused;
         };
 
@@ -847,7 +846,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         * Resets the playing board for a new game.
         * @method resetBoard
         */
-        me.resetBoard = function() {
+        me.resetBoard = function () {
             SNAKE.removeEventListener(elmContainer, "keydown", myKeyListener, false);
             mySnake.reset();
             elmLengthPanel.innerHTML = "Length: 1";
@@ -858,7 +857,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method getBoardState
         * @return {Number} The state of the board.
         */
-        me.getBoardState = function() {
+        me.getBoardState = function () {
             return boardState;
         };
         /**
@@ -866,32 +865,32 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method setBoardState
         * @param {Number} state The state of the board.
         */
-        me.setBoardState = function(state) {
+        me.setBoardState = function (state) {
             boardState = state;
         };
         /**
         * @method getGridFoodValue
         * @return {Number} A number that represents food on a number representation of the playing board.
         */
-        me.getGridFoodValue = function() {
+        me.getGridFoodValue = function () {
             return GRID_FOOD_VALUE;
         };
         /**
         * @method getPlayingFieldElement
         * @return {DOM Element} The div representing the playing field (this is where the snake can move).
         */
-        me.getPlayingFieldElement = function() {
+        me.getPlayingFieldElement = function () {
             return elmPlayingField;
         };
         /**
         * @method setBoardContainer
         * @param {DOM Element or String} myContainer Sets the container element for the game.
         */
-        me.setBoardContainer = function(myContainer) {
+        me.setBoardContainer = function (myContainer) {
             if (typeof myContainer === "string") {
                 myContainer = document.getElementById(myContainer);
             }
-            if (myContainer === elmContainer) {return;}
+            if (myContainer === elmContainer) { return; }
             elmContainer = myContainer;
             elmPlayingField = null;
 
@@ -901,21 +900,21 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @method getBoardContainer
         * @return {DOM Element}
         */
-        me.getBoardContainer = function() {
+        me.getBoardContainer = function () {
             return elmContainer;
         };
         /**
         * @method getBlockWidth
         * @return {Number}
         */
-        me.getBlockWidth = function() {
+        me.getBlockWidth = function () {
             return blockWidth;
         };
         /**
         * @method getBlockHeight
         * @return {Number}
         */
-        me.getBlockHeight = function() {
+        me.getBlockHeight = function () {
             return blockHeight;
         };
         /**
@@ -924,7 +923,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         */
         me.setupPlayingField = function () {
 
-            if (!elmPlayingField) {createBoardElements();} // create playing field
+            if (!elmPlayingField) { createBoardElements(); } // create playing field
 
             // calculate width of our game container
             var cWidth, cHeight;
@@ -932,9 +931,9 @@ SNAKE.Board = SNAKE.Board || (function() {
             if (config.fullScreen === true) {
                 cTop = 0;
                 cLeft = 0;
-                cWidth = getClientWidth()-20;
-                cHeight = getClientHeight()-20;
-                
+                cWidth = getClientWidth() - 20;
+                cHeight = getClientHeight() - 20;
+
             } else {
                 cTop = config.top;
                 cLeft = config.left;
@@ -943,28 +942,28 @@ SNAKE.Board = SNAKE.Board || (function() {
             }
 
             // define the dimensions of the board and playing field
-            var wEdgeSpace = me.getBlockWidth()*2 + (cWidth % me.getBlockWidth());
-            var fWidth = Math.min(maxBoardWidth()-wEdgeSpace,cWidth-wEdgeSpace);
-            var hEdgeSpace = me.getBlockHeight()*3 + (cHeight % me.getBlockHeight());
-            var fHeight = Math.min(maxBoardHeight()-hEdgeSpace,cHeight-hEdgeSpace);
+            var wEdgeSpace = me.getBlockWidth() * 2 + (cWidth % me.getBlockWidth());
+            var fWidth = Math.min(maxBoardWidth() - wEdgeSpace, cWidth - wEdgeSpace);
+            var hEdgeSpace = me.getBlockHeight() * 3 + (cHeight % me.getBlockHeight());
+            var fHeight = Math.min(maxBoardHeight() - hEdgeSpace, cHeight - hEdgeSpace);
 
             elmContainer.style.left = cLeft + "px";
             elmContainer.style.top = cTop + "px";
             elmContainer.style.width = cWidth + "px";
             elmContainer.style.height = cHeight + "px";
             elmPlayingField.style.left = me.getBlockWidth() + "px";
-            elmPlayingField.style.top  = me.getBlockHeight() + "px";
+            elmPlayingField.style.top = me.getBlockHeight() + "px";
             elmPlayingField.style.width = fWidth + "px";
             elmPlayingField.style.height = fHeight + "px";
 
             // the math for this will need to change depending on font size, padding, etc
             // assuming height of 14 (font size) + 8 (padding)
             var bottomPanelHeight = hEdgeSpace - me.getBlockHeight();
-            var pLabelTop = me.getBlockHeight() + fHeight + Math.round((bottomPanelHeight - 30)/2) + "px";
+            var pLabelTop = me.getBlockHeight() + fHeight + Math.round((bottomPanelHeight - 30) / 2) + "px";
 
             elmAboutPanel.style.top = pLabelTop;
             elmAboutPanel.style.width = "450px";
-            elmAboutPanel.style.left = Math.round(cWidth/2) - Math.round(450/2) + "px";
+            elmAboutPanel.style.left = Math.round(cWidth / 2) - Math.round(450 / 2) + "px";
 
             elmLengthPanel.style.top = pLabelTop;
             elmLengthPanel.style.left = 30 + "px";
@@ -986,7 +985,7 @@ SNAKE.Board = SNAKE.Board || (function() {
             for (var row = 0; row < numBoardRows; row++) {
                 me.grid[row] = [];
                 for (var col = 0; col < numBoardCols; col++) {
-                    if (col === 0 || row === 0 || col === (numBoardCols-1) || row === (numBoardRows-1)) {
+                    if (col === 0 || row === 0 || col === (numBoardCols - 1) || row === (numBoardRows - 1)) {
                         me.grid[row][col] = 1; // an edge
                     } else {
                         me.grid[row][col] = 0; // empty space
@@ -996,34 +995,34 @@ SNAKE.Board = SNAKE.Board || (function() {
 
             myFood.randomlyPlaceFood();
 
-            myKeyListener = function(evt) {
+            myKeyListener = function (evt) {
                 if (!evt) var evt = window.event;
                 var keyNum = (evt.which) ? evt.which : evt.keyCode;
 
                 if (me.getBoardState() === 1) {
-                    if ( !(keyNum >= 37 && keyNum <= 40) && !(keyNum === 87 || keyNum === 65 || keyNum === 83 || keyNum === 68)) {return;} // if not an arrow key, leave
+                    if (!(keyNum >= 37 && keyNum <= 40) && !(keyNum === 87 || keyNum === 65 || keyNum === 83 || keyNum === 68)) { return; } // if not an arrow key, leave
 
                     // This removes the listener added at the #listenerX line
                     SNAKE.removeEventListener(elmContainer, "keydown", myKeyListener, false);
 
-                    myKeyListener = function(evt) {
+                    myKeyListener = function (evt) {
                         if (!evt) var evt = window.event;
                         var keyNum = (evt.which) ? evt.which : evt.keyCode;
 
                         //console.log(keyNum);
                         if (keyNum === 32) {
-							if(me.getBoardState()!=0)
+                            if (me.getBoardState() != 0)
                                 me.setPaused(!me.getPaused());
                         }
 
                         mySnake.handleArrowKeys(keyNum);
 
                         evt.cancelBubble = true;
-                        if (evt.stopPropagation) {evt.stopPropagation();}
-                        if (evt.preventDefault) {evt.preventDefault();}
+                        if (evt.stopPropagation) { evt.stopPropagation(); }
+                        if (evt.preventDefault) { evt.preventDefault(); }
                         return false;
                     };
-                    SNAKE.addEventListener( elmContainer, "keydown", myKeyListener, false);
+                    SNAKE.addEventListener(elmContainer, "keydown", myKeyListener, false);
 
                     mySnake.rebirth();
                     mySnake.handleArrowKeys(keyNum);
@@ -1032,13 +1031,13 @@ SNAKE.Board = SNAKE.Board || (function() {
                 }
 
                 evt.cancelBubble = true;
-                if (evt.stopPropagation) {evt.stopPropagation();}
-                if (evt.preventDefault) {evt.preventDefault();}
+                if (evt.stopPropagation) { evt.stopPropagation(); }
+                if (evt.preventDefault) { evt.preventDefault(); }
                 return false;
             };
 
             // Search for #listenerX to see where this is removed
-            SNAKE.addEventListener( elmContainer, "keydown", myKeyListener, false);
+            SNAKE.addEventListener(elmContainer, "keydown", myKeyListener, false);
         };
 
         /**
@@ -1047,10 +1046,9 @@ SNAKE.Board = SNAKE.Board || (function() {
         * @return {bool} Whether a new food was able to spawn (true)
         *   or not (false) after the snake eats food.
         */
-        me.foodEaten = function() {
+        me.foodEaten = function () {
             elmLengthPanel.innerHTML = "Length: " + mySnake.snakeLength;
-            if (mySnake.snakeLength > localStorage.jsSnakeHighScore)
-            {
+            if (mySnake.snakeLength > localStorage.jsSnakeHighScore) {
                 localStorage.setItem("jsSnakeHighScore", mySnake.snakeLength);
                 elmHighscorePanel.innerHTML = "Highscore: " + localStorage.jsSnakeHighScore;
             }
@@ -1064,7 +1062,8 @@ SNAKE.Board = SNAKE.Board || (function() {
         * This method is called when the snake dies.
         * @method handleDeath
         */
-        me.handleDeath = function() {
+        me.handleDeath = function () {
+            document.getElementById("highscore").value = localStorage.jsSnakeHighScore;
             handleEndCondition(elmTryAgain);
         };
 
@@ -1088,7 +1087,7 @@ SNAKE.Board = SNAKE.Board || (function() {
         config.premoveOnPause = (typeof config.premoveOnPause === "undefined") ? false : config.premoveOnPause;
 
         if (config.fullScreen) {
-            SNAKE.addEventListener(window,"resize", function() {
+            SNAKE.addEventListener(window, "resize", function () {
                 me.setupPlayingField();
             }, false);
         }

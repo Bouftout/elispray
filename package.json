@@ -1,39 +1,30 @@
 {
-  "name": "tonipastre",
+  "name": "elispray",
   "version": "1.0.0",
-  "description": "site web en cours(serv node.js)",
+  "description": "Project de groupe",
   "main": "index.js",
   "scripts": {
-    "test": "node index.js",
-    "start": "node index.js"
+    "test": "nodemon index.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Bouftout/sitewebcours.git"
+    "url": "git+https://github.com/Bouftout/elispray.git"
   },
-  "author": "Toni Pastre",
+  "keywords": [
+    "elispray"
+  ],
+  "author": "Toni",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Bouftout/sitewebcours/issues"
+    "url": "https://github.com/Bouftout/elispray/issues"
   },
-  "homepage": "https://github.com/Bouftout/sitewebcours#readme",
+  "homepage": "https://github.com/Bouftout/elispray#readme",
   "dependencies": {
-    "@sendgrid/mail": "^7.6.0",
-    "body-parser": "^1.19.0",
-    "colors": "^1.4.0",
-    "compression": "^1.7.4",
-    "express": "^4.17.1",
-    "helmet": "^4.6.0",
-    "materialize-css": "^1.0.0-rc.2",
-    "mediaserver": "^0.1.1",
-    "moment": "^2.29.1",
-    "morgan": "^1.10.0",
-    "nodemailer": "^6.7.2",
-    "php": "^1.0.2",
-    "php-express": "0.0.3",
-    "serve-favicon": "^2.5.0",
-    "sphp": "^0.6.3",
-    "winbox": "^0.2.0"
-  },
-  "keywords": []
+    "cheerio": "^1.0.0-rc.10",
+    "express": "^4.17.3",
+    "express-session": "^1.17.2",
+    "htmlparser2": "^7.2.0",
+    "mysql": "^2.18.1",
+    "path": "^0.12.7"
+  }
 }
