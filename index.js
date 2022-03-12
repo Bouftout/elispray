@@ -2,7 +2,6 @@ const mysql = require('mysql');
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-const { nextTick } = require('process');
 
 const connection = mysql.createConnection({
 	host: 'mysql-bellone.alwaysdata.net',
@@ -25,8 +24,23 @@ app.use(express.static(path.join(__dirname, 'Page web')));
 // http://localhost:3000/
 app.get('/', function (request, response) {
 	// Render login template
+	response.sendFile(path.join(__dirname + '/Page web/accuiel.html'));
+});
+
+
+app.get('/login', function (request, response) {
+	// Render login template
 	response.sendFile(path.join(__dirname + '/Page web/login.html'));
 });
+
+
+app.get('/create', function (request, response) {
+	// Render login template
+	response.sendFile(path.join(__dirname + '/Page web/create.html'));
+});
+
+
+var countcreate = 0;
 
 app.post('/create', function (request, response) {
 	// Capture the input fields
@@ -35,20 +49,30 @@ app.post('/create', function (request, response) {
 	// Ensure the input fields exists and are not empty
 	if (username && password) {
 		// Execute SQL query that'll select the account from the database based on the specified username and password
-		connection.query('SELECT * FROM accounts WHERE username = ? AND password = ?', [username, password], function (error, results, fields) {
+
+		//INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
+
+
+
+		connection.query('SELECT id FROM accounts', function (error, results, fields) {
 			// If there is an issue with the query, output the error
 			if (error) throw error;
-			// If the account exists
-			if (results.length > 0) {
-				// Authenticate the user
-				request.session.loggedin = true;
-				request.session.username = username;
-				// Redirect to home page
-				response.redirect('/home');
-			} else {
-				response.send('Incorrect Username and/or Password!');
-			}
-			response.end();
+			countcreate = Object.keys(results).length;
+
+
+			connection.query(`INSERT INTO \`accounts\` (\`id\`, \`username\`, \`password\`, \`highscore1\`) VALUES (${countcreate + 1}, '${username}', '${password}', 0);`, [username, password], function (error, results, fields) {
+				// If there is an issue with the query, output the error
+				if (error) throw error;
+				// If the account exists
+
+				if (results.protocol41 == true) {
+					response.redirect("/login")
+				} else {
+					response.redirect("/create")
+				}
+				response.end();
+			});
+
 		});
 	} else {
 		response.send('Please enter Username and Password!');
@@ -93,7 +117,7 @@ app.get('/home', function (request, response, next) {
 	if (request.session.loggedin) {
 		// Output username
 		response.send('<a href="/Snake">Snake</a> Re, ' + request.session.username + '!');
-	
+
 	} else {
 		// Not logged in
 		response.redirect("/")
@@ -115,10 +139,22 @@ app.get('/snake', function (request, response) {
 app.post('/highscore', function (request, response) {
 	// Capture the input fields
 	let highscore = request.body.highscore;
-	connection.query(`UPDATE accounts SET highscore1 = ${highscore};`, function (error, results, fields) {
+	let username = request.session.username;
+
+	connection.query(`SELECT highscore1 FROM accounts WHERE username = "${username}"`, function (error, results, fields) {
 		// If there is an issue with the query, output the error
 		if (error) throw error;
-		response.redirect("/gg");
+		console.log(results[0].highscore1)
+		if (results[0].highscore1 < highscore) {
+			connection.query(`UPDATE accounts SET highscore1 = ${highscore} WHERE username = "${username}";`, function (error, results, fields) {
+				// If there is an issue with the query, output the error"
+				if (error) throw error;
+				response.end();
+			});
+		} else {
+			console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd")
+		}
+
 
 	});
 
