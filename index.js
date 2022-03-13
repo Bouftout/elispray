@@ -24,7 +24,12 @@ app.use(express.static(path.join(__dirname, 'Page web')));
 // http://localhost:3000/
 app.get('/', function (request, response) {
 	// Render login template
-	response.sendFile(path.join(__dirname + '/Page web/accuiel.html'));
+	response.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+});
+
+app.get('/play', function (request, response) {
+	// Render login template
+	response.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
 });
 
 
