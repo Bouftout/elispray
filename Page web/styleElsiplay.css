@@ -1,22 +1,23 @@
-.bouton{
+.bouton {
     width: 15%;
-    background-color:#E4EFFF;
-    border:1px solid #9FC6FF;
-    padding:5px;
-/*arrondir les coins en haut à gauche et en bas à droite*/
-    -moz-border-radius:10px 0;
-    -webkit-border-radius:10px 0;
-    border-radius:10px 0;
+    background-color: #E4EFFF;
+    border: 1px solid #9FC6FF;
+    padding: 5px;
+    /*arrondir les coins en haut à gauche et en bas à droite*/
+    -moz-border-radius: 10px 0;
+    -webkit-border-radius: 10px 0;
+    border-radius: 10px 0;
 }
 
-.bouton:hover{
-    background-color:#ccc;
-color:rgb(66, 107, 27);
-border:rgb(114, 233, 90) 1px solid;
+.bouton:hover {
+    background-color: #ccc;
+    color: rgb(66, 107, 27);
+    border: rgb(114, 233, 90) 1px solid;
 }
 
-audio, embed {
+audio,
+embed {
     position: absolute;
     z-index: -9999;
-    display:none;
+    display: none;
 }
