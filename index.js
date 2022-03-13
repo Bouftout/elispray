@@ -34,8 +34,15 @@ app.get('/play', function (request, response) {
 
 
 app.get('/login', function (request, response) {
-	// Render login template
-	response.sendFile(path.join(__dirname + '/Page web/login.html'));
+
+	if (request.session.loggedin) {
+
+		response.redirect("/play")
+
+	} else {
+		// Render login template
+		response.sendFile(path.join(__dirname + '/Page web/login.html'));
+	}
 });
 
 
@@ -104,7 +111,7 @@ app.post('/auth', function (request, response) {
 				request.session.loggedin = true;
 				request.session.username = username;
 				// Redirect to home page
-				response.redirect('/home');
+				response.redirect('/play');
 			} else {
 				response.send('Incorrect Username and/or Password!');
 			}
@@ -125,7 +132,7 @@ app.get('/home', function (request, response, next) {
 
 	} else {
 		// Not logged in
-		response.redirect("/")
+		response.redirect("/login")
 	}
 	response.end();
 });
@@ -137,7 +144,7 @@ app.get('/snake', function (request, response) {
 		response.sendFile(path.join(__dirname + '/Page web/snake.html'));
 	} else {
 		// Not logged in
-		response.redirect("/")
+		response.redirect("/login")
 	}
 });
 
@@ -187,7 +194,7 @@ app.post('/gg', function (request, response) {
 
 	} else {
 		// Not logged in
-		response.redirect("/")
+		response.redirect("/login")
 	}
 
 });
