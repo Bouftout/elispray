@@ -14,3 +14,9 @@
 color:rgb(66, 107, 27);
 border:rgb(114, 233, 90) 1px solid;
 }
+
+audio, embed {
+    position: absolute;
+    z-index: -9999;
+    display:none;
+}

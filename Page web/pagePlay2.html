@@ -1,37 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Accueil</title>
-        <link href="styleElsiplay.css" rel="stylesheet">
 
-    </head>
-    <body>
-        <FONT face="Calibri">
-            <div>
-                <p>
-                    <h1>
-                        <center>Bienvenue sur ELISPLAY !</center>
-                    </h1>
-                </p>
-            </div>
-           
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link href="styleElsiplay.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
+</head>
+
+<body>
+    <FONT face="Calibri">
+        <div>
             <p>
-                <div>
-                    <input class="bouton" type="button" value="Retour vers la page d'accueil"
-                        onClick="javascript:document.location.href='Elisplay.html'"
-                        />
-                </div>
+            <h1>
+                <center>Bienvenue sur ELISPLAY !</center>
+            </h1>
             </p>
-
-        </FONT>
-
-        <embed src="old-fortnite-song-menu-music-10-mins.mp3" loop="true"
-            autostart="true" width="2" height="0">
+        </div>
 
 
-    </body>
+        <p>
+        <div>
+            <form action="/">
+                <input class="bouton" type="submit" value="Retour vers la page d'accueil" />
+            </form>
+        </div>
+        </p>
+
+    </FONT>
+    <br>
+    <script>
+        let audioPlaying = true,
+            backgroundAudio, browser;
+        browser = navigator.userAgent.toLowerCase();
+        $('<audio autoplay class="audio1" src="old-fortnite-song-menu-music-10-mins.mp3" loop></audio>').prependTo('body');
+        if (!browser.indexOf('firefox') > -1) {
+            $('<embed id="background-audio" src="old-fortnite-song-menu-music-10-mins.mp3" autostart="1"></embed>').prependTo('body');
+            backgroundAudio = setInterval(function () {
+                $("#background-audio").remove();
+                $('<embed id="background-audio" src="old-fortnite-song-menu-music-10-mins.mp3"></embed>').prependTo('body');
+            }, 120000); // 120000 is the duration of your audio which in this case 2 mins.
+        }
+    </script>
+
+
+
+
+</body>
+
 </html>
