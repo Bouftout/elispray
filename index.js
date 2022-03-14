@@ -175,18 +175,20 @@ app.post('/highscore', function(request, response) {
 
 const cheerio = require('cheerio');
 var tableauchiffre = ["", ""];
+var tableauvraichiffre = [0, 0];
 var count = 0;
 
 app.post('/gg', function(request, response) {
 
     if (request.session.loggedin) {
 
-        connection.query(`SELECT highscore1 FROM accounts`, function(error, results, fields) {
+        connection.query(`SELECT highscore1,username FROM accounts`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) throw error;
             count = Object.keys(results).length;
             for (i = 0; i <= count - 1; i++) {
                 tableauchiffre[i] = results[i].highscore1;
+                tableauvraichiffre[i] = results[i].username;
             }
 
             response.redirect("/gg");
@@ -230,7 +232,7 @@ app.get('/gg', function(request, response) {
     } else {
 
         for (i = 0; i < count; i++) {
-            $('table').append(`<tr><td>${request.session.username}</td><td>${tableauchiffre}</td></tr>`);
+            $('table').append(`<tr><td>${tableauvraichiffre[i]}</td><td>${tableauchiffre[i]}</td></tr>`);
         }
 
         //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);

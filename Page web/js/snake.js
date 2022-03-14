@@ -393,8 +393,8 @@ SNAKE.Snake = SNAKE.Snake || (function () {
             var selectDropDown = document.getElementById("selectMode");
             var selectedOption = selectDropDown.options[selectDropDown.selectedIndex];
             console.log(snakeSpeed)
-            if (snakeSpeed >= 1) {
-                snakeSpeed > 30 ? snakeSpeed -= 5 : snakeSpeed = snakeSpeed - 3;
+            if (snakeSpeed >= 5) {
+                snakeSpeed > 30 ? snakeSpeed -= 5 : snakeSpeed = snakeSpeed - 1;
             }
 
             return true;
