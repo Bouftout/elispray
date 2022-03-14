@@ -39,6 +39,30 @@ app.get('/play', function(request, response) {
 });
 
 
+app.get('/tetris', function(request, response) {
+    // Render login template
+    if (request.session.loggedin) {
+        response.sendFile(path.join(__dirname + '/Page web/tetris.html'));
+
+    } else {
+        // Pas connectée.
+        response.redirect("/login")
+    }
+});
+
+app.get('/court', function(request, response) {
+    // Render login template
+    if (request.session.loggedin) {
+        response.sendFile(path.join(__dirname + '/Page web/court.html'));
+
+    } else {
+        // Pas connectée.
+        response.redirect("/login")
+    }
+});
+
+
+
 app.get('/login', function(request, response) {
 
     if (request.session.loggedin) {
