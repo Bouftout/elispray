@@ -393,8 +393,8 @@ SNAKE.Snake = SNAKE.Snake || (function () {
             var selectDropDown = document.getElementById("selectMode");
             var selectedOption = selectDropDown.options[selectDropDown.selectedIndex];
 
-            if (selectedOption.text.localeCompare("Rush") == 0) {
-                snakeSpeed > 30 ? snakeSpeed -= 5 : snakeSpeed = snakeSpeed - 1;
+            if (snakeSpeed >= 1) {
+                snakeSpeed > 30 ? snakeSpeed -= 5 : snakeSpeed = snakeSpeed - 3;
             }
 
             return true;
