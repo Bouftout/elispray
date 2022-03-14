@@ -114,12 +114,12 @@ app.post('/auth', function(request, response) {
                 // rediction page play.
                 response.redirect('/play');
             } else {
-                response.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+                response.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br><a href=javascript:history.go(-1)>Retour</a><script>window.alert("Mauvais Nom d'utlisateur et/ou mauvais mot de passe");</script>");
             }
             response.end();
         });
     } else {
-        response.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+        response.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br><a href=javascript:history.go(-1)>Retour</a><script>window.alert("Mauvais Nom d'utlisateur et/ou mauvais mot de passe");</script>");
         response.end();
     }
 });
