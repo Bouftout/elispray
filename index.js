@@ -268,6 +268,51 @@ app.get('/gg', function(request, response) {
 });
 
 
-port = process.env.PORT || 3000;
+let portws = process.env.PORT || 8080;
+let port = process.env.PORT || 3000;
+server = app.listen(port, () => console.log(`Hello world app listening on port ${port}!`))
 
-app.listen(port);
+
+
+console.log(portws)
+const io = require("socket.io")(server)
+
+
+// server-side
+io.on("connection", (socket) => {
+    // console.log("Connection:" + socket.id); // x8WIv7-mJelg7on_ALbx
+
+    socket.conn.on("upgrade", () => {
+        const upgradedTransport = socket.conn.transport.name; // in most cases, "websocket"
+        console.log(upgradedTransport)
+    });
+
+    socket.on("msg", (arg, arg1) => {
+        io.emit("helloserv", arg, arg1);
+    });
+
+    socket.on("changeusernameforserv", (arg) => {
+        io.emit("changeusername", arg);
+    });
+
+    socket.on("typingserv", (arg) => {
+        io.emit("typing", arg);
+    });
+
+    socket.on("nvplayerserv", (arg) => {
+        io.emit("nvplayer", arg);
+    });
+
+});
+
+// Render chat
+app.set('view engine', 'ejs')
+
+app.get('/chat', function(request, response) {
+    response.render('chat')
+});
+
+
+app.get('/game', function(request, response) {
+    response.render('game')
+});

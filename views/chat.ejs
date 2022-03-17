@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" const="text/html;charset=UTF-8" />
+    <link href="http://fonts.googleapis.com/css?family=Comfortaa" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" type="text/css" href="./css/stylechat.css">
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
+    <title>Simple Chat App</title>
+</head>
+
+<body>
+    <header>
+        <h1>Super Chat</h1>
+    </header>
+
+    <section>
+        <div id="change_username">
+            <input id="username" type="text" />
+            <button onclick="changeusername()" id="send_username" type="button">Change username</button>
+        </div>
+    </section>
+
+    <section id="chatroom">
+    </section>
+    <section id="feedback"></section>
+
+
+
+
+    <section id="input_zone">
+        <input id="message" class="vertical-align" type="text" />
+        <button onclick="emitmsg()" id="send_message" class="vertical-align" type="button">Send</button>
+    </section>
+
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+        var message = $("#message");
+        var chatroom = $("#chatroom")
+        var feedback = $("#feedback")
+        var usernameinput = $("#username")
+
+        var username = "Anonymous"
+
+
+        const socket = io({
+            auth: (cb) => {
+                cb(localStorage.getItem("token"));
+            }
+        });
+
+        socket.on("connect_error", () => {
+            setTimeout(() => {
+                socket.connect();
+            }, 1000);
+        });
+
+        // client-side
+        socket.on("connect", () => {
+            const engine = socket.io.engine;
+
+            engine.on("upgrade", () => {
+                const upgradedTransport = socket.io.engine.transport.name; // in most cases, "websocket"
+                console.log(upgradedTransport)
+                socket.emit("nvplayerserv", socket.id)
+            });
+        });
+
+
+        // receive a message from the server
+        socket.on("nvplayer", (arg) => {
+            if (socket.id != arg) {
+                chatroom.append(`<p class='message'>Dite tous bonjour à ${username}</p>`)
+            }
+        });
+
+        // receive a message from the server
+        socket.on("helloserv", (username, msg) => {
+            chatroom.append(`<p class='message'>${username} : ${msg}</p>`)
+            feedback.html('');
+        });
+
+        function emitmsg() {
+            if (socket.connected) {
+                socket.emit("msg", username, message.val());
+                feedback.html('');
+                message.val('');
+            } else {
+                socket.connect();
+            }
+        }
+
+        function changeusername() {
+            if (socket.connected) {
+                console.log("INPUT" + usernameinput.val())
+                socket.emit("changeusernameforserv", usernameinput.val());
+            } else {
+                socket.connect();
+            }
+        }
+
+
+        socket.on("changeusername", (usernamenv) => {
+            chatroom.append(`<p class='message'>${username} : a changer son pseudo en : <i>${usernamenv}</i></p>`)
+            username = usernamenv
+        });
+
+        //Emit typing
+        message.bind("keypress", () => {
+            socket.emit('typingserv', socket.id)
+        })
+
+
+        //Listen on typing
+        socket.on('typing', (data) => {
+            if (socket.id != data) {
+                feedback.html(`<p><i>${username} écrit un message... </i></p>`)
+            }
+        })
+    </script>
+</body>
+
+</html>
