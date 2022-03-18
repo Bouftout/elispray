@@ -277,6 +277,7 @@ server = app.listen(port, () => console.log(`Hello world app listening on port $
 console.log(portws)
 const io = require("socket.io")(server)
 
+const { convert } = require('html-to-text');
 
 // server-side
 io.on("connection", (socket) => {
@@ -287,8 +288,13 @@ io.on("connection", (socket) => {
         console.log(upgradedTransport)
     });
 
-    socket.on("msg", (arg, arg1) => {
-        io.emit("helloserv", arg, arg1);
+    socket.on("msg", (username, msg) => {
+        const textmsg = convert(msg, {
+            wordwrap: 130
+        });
+
+        io.emit("helloserv", username, textmsg);
+
     });
 
     socket.on("changeusernameforserv", (arg) => {
