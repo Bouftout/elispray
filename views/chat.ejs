@@ -16,15 +16,14 @@
 
     <section>
         <div id="change_username">
-            <input id="username" type="text" />
-            <button onclick="changeusername()" id="send_username" type="button">Change username</button>
+            <button style="display: none" onclick="changeusername()" id="send_username" type="button">Change
+                username</button>
         </div>
     </section>
 
     <section id="chatroom">
     </section>
     <section id="feedback"></section>
-
 
 
 
@@ -38,9 +37,21 @@
         var message = $("#message");
         var chatroom = $("#chatroom")
         var feedback = $("#feedback")
-        var usernameinput = $("#username")
 
         var username = "Anonymous"
+        console.log(document.location.origin)
+
+        fetch(`${document.location.origin}/username`, {
+                method: "GET",
+            })
+            .then((response) => response.json())
+            .then((result) => {
+                console.log(JSON.parse(result).user)
+                username = JSON.parse(result).user
+            })
+            .catch((error) => {
+                console.error(error);
+            });
 
 
         const socket = io({
@@ -62,13 +73,13 @@
             engine.on("upgrade", () => {
                 const upgradedTransport = socket.io.engine.transport.name; // in most cases, "websocket"
                 console.log(upgradedTransport)
-                socket.emit("nvplayerserv", socket.id)
+                socket.emit("nvplayerserv", socket.id, username)
             });
         });
 
 
         // receive a message from the server
-        socket.on("nvplayer", (arg) => {
+        socket.on("nvplayer", (arg, username) => {
             if (socket.id != arg) {
                 chatroom.append(`<p class='message'>Dite tous bonjour à ${username}</p>`)
             }
@@ -80,43 +91,70 @@
             feedback.html('');
         });
 
+        let spamhahalol = 0;
+        let timeout;
+
+        function timer(time) {
+            timeout = setTimeout(remettreazero, time);
+        }
+
+        function myStopFunction() {
+            clearTimeout(timeout);
+        }
+
+        function remettreazero() {
+            if (spamhahalol > 4) {
+                alert("Vous pouvez maintenant récrire")
+            }
+            enableBtn("send_message")
+            spamhahalol = 0;
+        }
+
         function emitmsg() {
-            if (socket.connected) {
-                socket.emit("msg", username, message.val());
-                feedback.html('');
-                message.val('');
+            clearTimeout(timeout);
+            timer(10000)
+            spamhahalol++
+            console.log(spamhahalol)
+            if (message.val() != "" && spamhahalol <= 4) {
+                if (socket.connected) {
+                    socket.emit("msg", username, message.val());
+                    feedback.html('');
+                    message.val('');
+                } else {
+                    socket.connect();
+                }
+            } else if (spamhahalol > 4) {
+                disableBtn("send_message")
+                alert("Trop de spam veuillez patientez")
+                myStopFunction()
+                timer(5000)
             } else {
-                socket.connect();
+                disableBtn("send_message")
             }
+
         }
-
-        function changeusername() {
-            if (socket.connected) {
-                console.log("INPUT" + usernameinput.val())
-                socket.emit("changeusernameforserv", usernameinput.val());
-            } else {
-                socket.connect();
-            }
-        }
-
-
-        socket.on("changeusername", (usernamenv) => {
-            chatroom.append(`<p class='message'>${username} : a changer son pseudo en : <i>${usernamenv}</i></p>`)
-            username = usernamenv
-        });
 
         //Emit typing
         message.bind("keypress", () => {
-            socket.emit('typingserv', socket.id)
+            socket.emit('typingserv', socket.id, username)
+
         })
 
 
         //Listen on typing
-        socket.on('typing', (data) => {
+        socket.on('typing', (data, username) => {
             if (socket.id != data) {
                 feedback.html(`<p><i>${username} écrit un message... </i></p>`)
             }
         })
+
+        function disableBtn(idbtn) {
+            document.getElementById(idbtn).disabled = true;
+        }
+
+        function enableBtn(idbtn) {
+            document.getElementById(idbtn).disabled = false;
+        }
     </script>
 </body>
 

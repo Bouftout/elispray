@@ -22,69 +22,69 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Page web')));
 
 // http://localhost:3000/
-app.get('/', function(request, response) {
+app.get('/', function(request, res) {
     // Render login template
-    response.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+    res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
 });
 
-app.get('/play', function(request, response) {
+app.get('/play', function(request, res) {
     // Render login template
     if (request.session.loggedin) {
-        response.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
+        res.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
 
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
 });
 
 
-app.get('/tetris', function(request, response) {
+app.get('/tetris', function(request, res) {
     // Render login template
     if (request.session.loggedin) {
-        response.sendFile(path.join(__dirname + '/Page web/tetris.html'));
+        res.sendFile(path.join(__dirname + '/Page web/tetris.html'));
 
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
 });
 
-app.get('/court', function(request, response) {
+app.get('/court', function(request, res) {
     // Render login template
     if (request.session.loggedin) {
-        response.sendFile(path.join(__dirname + '/Page web/court.html'));
+        res.sendFile(path.join(__dirname + '/Page web/court.html'));
 
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
 });
 
 
 
-app.get('/login', function(request, response) {
+app.get('/login', function(request, res) {
 
     if (request.session.loggedin) {
 
-        response.redirect("/play")
+        res.redirect("/play")
 
     } else {
         // Render login template
-        response.sendFile(path.join(__dirname + '/Page web/login.html'));
+        res.sendFile(path.join(__dirname + '/Page web/login.html'));
     }
 });
 
 
-app.get('/create', function(request, response) {
+app.get('/create', function(request, res) {
     // Render login template
-    response.sendFile(path.join(__dirname + '/Page web/create.html'));
+    res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
 
 
 var countcreate = 0;
 
-app.post('/create', function(request, response) {
+app.post('/create', function(request, res) {
     // Capture the input fields
     let username = request.body.username;
     let password = request.body.password;
@@ -108,24 +108,24 @@ app.post('/create', function(request, response) {
                 // If the account exists
 
                 if (results.protocol41 == true) {
-                    response.redirect("/login")
+                    res.redirect("/login")
                 } else {
-                    response.redirect("/create")
+                    res.redirect("/create")
                 }
-                response.end();
+                res.end();
             });
 
         });
     } else {
-        response.send('Please enter Username and Password!');
-        response.end();
+        res.send('Please enter Username and Password!');
+        res.end();
     }
 
 });
 
 
 // http://localhost:3000/auth
-app.post('/auth', function(request, response) {
+app.post('/auth', function(request, res) {
 
     let username = request.body.username;
     let password = request.body.password;
@@ -136,44 +136,44 @@ app.post('/auth', function(request, response) {
                 request.session.loggedin = true;
                 request.session.username = username;
                 // rediction page play.
-                response.redirect('/play');
+                res.redirect('/play');
             } else {
-                response.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+                res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
             }
-            response.end();
+            res.end();
         });
     } else {
-        response.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
-        response.end();
+        res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+        res.end();
     }
 });
 
 // http://localhost:3000/home
-app.get('/home', function(request, response, next) {
+app.get('/home', function(request, res, next) {
     // Si l'utilisateur est connecté
     if (request.session.loggedin) {
         // Output username
-        response.send('<a href="/Snake">Snake</a> Re, ' + request.session.username + '!');
+        res.send('<a href="/Snake">Snake</a> Re, ' + request.session.username + '!');
 
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
-    response.end();
+    res.end();
 });
 
 
-app.get('/snake', function(request, response) {
+app.get('/snake', function(request, res) {
 
     if (request.session.loggedin) {
-        response.sendFile(path.join(__dirname + '/Page web/snake.html'));
+        res.sendFile(path.join(__dirname + '/Page web/snake.html'));
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
 });
 
-app.post('/highscore', function(request, response) {
+app.post('/highscore', function(request, res) {
     // Capture the input fields
     let highscore = request.body.highscore;
     let username = request.session.username;
@@ -186,7 +186,7 @@ app.post('/highscore', function(request, response) {
             connection.query(`UPDATE accounts SET highscore1 = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
                 // If there is an issue with the query, output the error"
                 if (error) throw error;
-                response.end();
+                res.end();
             });
         } else {
             console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd")
@@ -202,7 +202,7 @@ var tableauchiffre = ["", ""];
 var tableauvraichiffre = [0, 0];
 var count = 0;
 
-app.post('/gg', function(request, response) {
+app.post('/gg', function(request, res) {
 
     if (request.session.loggedin) {
 
@@ -215,18 +215,18 @@ app.post('/gg', function(request, response) {
                 tableauvraichiffre[i] = results[i].username;
             }
 
-            response.redirect("/gg");
+            res.redirect("/gg");
 
         })
 
     } else {
         // Pas connectée.
-        response.redirect("/login")
+        res.redirect("/login")
     }
 
 });
 
-app.get('/gg', function(request, response) {
+app.get('/gg', function(request, res) {
 
     const document = `<!DOCTYPE html>
 	<html>
@@ -261,9 +261,9 @@ app.get('/gg', function(request, response) {
 
         //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);
     }
-    response.send($.html());
+    res.send($.html());
 
-    response.end();
+    res.end();
 
 });
 
@@ -297,16 +297,13 @@ io.on("connection", (socket) => {
 
     });
 
-    socket.on("changeusernameforserv", (arg) => {
-        io.emit("changeusername", arg);
+
+    socket.on("typingserv", (arg, username) => {
+        io.emit("typing", arg, username);
     });
 
-    socket.on("typingserv", (arg) => {
-        io.emit("typing", arg);
-    });
-
-    socket.on("nvplayerserv", (arg) => {
-        io.emit("nvplayer", arg);
+    socket.on("nvplayerserv", (arg, username) => {
+        io.emit("nvplayer", arg, username);
     });
 
 });
@@ -314,11 +311,38 @@ io.on("connection", (socket) => {
 // Render chat
 app.set('view engine', 'ejs')
 
-app.get('/chat', function(request, response) {
-    response.render('chat')
+app.get('/chat', function(request, res) {
+    if (request.session.loggedin) {
+
+        res.render('chat');
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
 });
 
+app.get('/username', function(request, res) {
 
-app.get('/game', function(request, response) {
-    response.render('game')
+    if (request.session.loggedin) {
+
+        let usernames = request.session.username;
+        res.json(`{"user":"${usernames}"}`)
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+app.get('/game', function(request, res) {
+    res.render('game')
+});
+
+app.get('/td', function(request, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
+
 });
