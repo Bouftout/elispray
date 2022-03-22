@@ -403,3 +403,15 @@ app.get('/snake2', function(request, res) {
     res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
 
 });
+
+app.get('/brick', function(request, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/brick/index.html'));
+
+});
+
+app.get('/undertale', function(request, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
+
+});
