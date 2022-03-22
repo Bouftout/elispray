@@ -39,6 +39,9 @@
                 <form action="/td">
                     <input class="bouton" type="submit" value="Td" />
                 </form>
+                <form action="/gg">
+                    <input class="bouton" type="submit" value="Highscore" />
+                </form>
             </div>
         </p>
 
@@ -48,12 +51,12 @@
         let audioPlaying = true,
             backgroundAudio, browser;
         browser = navigator.userAgent.toLowerCase();
-        $('<audio autoplay class="audio1" src="fortnite-og-save-the-world-music.mp3" loop></audio>').prependTo('body');
+        $('<audio autoplay class="audio1" src="old-fortnite-song-menu-music-10-mins.mp3" loop></audio>').prependTo('body');
         if (!browser.indexOf('firefox') > -1) {
-            $('<embed id="background-audio" src="fortnite-og-save-the-world-music.mp3" autostart="1"></embed>').prependTo('body');
+            $('<embed id="background-audio" src="old-fortnite-song-menu-music-10-mins.mp3" autostart="1"></embed>').prependTo('body');
             backgroundAudio = setInterval(function() {
                 $("#background-audio").remove();
-                $('<embed id="background-audio" src="fortnite-og-save-the-world-music.mp3"></embed>').prependTo('body');
+                $('<embed id="background-audio" src="old-fortnite-song-menu-music-10-mins.mp3"></embed>').prependTo('body');
             }, 120000); // 120000 is the duration of your audio which in this case 2 mins.
         }
     </script>
