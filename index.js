@@ -92,8 +92,8 @@ app.get('/create', function(request, res) {
     res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
 
-async function idfunct() {
-    await connection.query('SELECT id FROM accounts', function(error, results, fields) {
+function idfunct() {
+    connection.query('SELECT id FROM accounts', function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) throw error;
         countcreate = Object.keys(results).length;
@@ -101,39 +101,39 @@ async function idfunct() {
 }
 
 
-var countcreate = 0;
+var countcreate = idfunct();
 
 function usernamee(usernameinput) {
     connection.query('SELECT username FROM accounts', function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) throw error;
-
         for (i = 0; i < Object.keys(results).length; i++) {
-
-            console.log(results[i].username)
             if (results[i].username == usernameinput) {
-                return true
-            } else {
-                return false
+                verifusername = true;
             }
         }
     });
 }
 
-
+var verifusername = false;
 
 app.post('/create', function(request, res) {
-    idfunct() // nombre d'id
 
     // Capture the input fields
     let username = request.body.username;
     let password = request.body.password;
+
+    idfunct() // nombre d'id
+    usernamee(username)
+    console.log(countcreate)
+
     // Ensure the input fields exists and are not empty
     if (username && password) {
         // Execute SQL query that'll select the account from the database based on the specified username and password
 
         //INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
-        if (usernamee() == false) {
+        console.log("TEST:" + verifusername)
+        if (verifusername == false) {
             connection.query(`INSERT INTO \`accounts\` (\`id\`, \`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES (${countcreate + 1}, '${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
                 // If there is an issue with the query, output the error
                 if (error) throw error;
