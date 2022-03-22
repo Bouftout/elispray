@@ -81,10 +81,39 @@ app.get('/create', function(request, res) {
     res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
 
+async function idfunct() {
+    await connection.query('SELECT id FROM accounts', function(error, results, fields) {
+        // If there is an issue with the query, output the error
+        if (error) throw error;
+        countcreate = Object.keys(results).length;
+    });
+}
+
 
 var countcreate = 0;
 
+function usernamee(usernameinput) {
+    connection.query('SELECT username FROM accounts', function(error, results, fields) {
+        // If there is an issue with the query, output the error
+        if (error) throw error;
+
+        for (i = 0; i < Object.keys(results).length; i++) {
+
+            console.log(results[i].username)
+            if (results[i].username == usernameinput) {
+                return true
+            } else {
+                return false
+            }
+        }
+    });
+}
+
+
+
 app.post('/create', function(request, res) {
+    idfunct() // nombre d'id
+
     // Capture the input fields
     let username = request.body.username;
     let password = request.body.password;
@@ -93,16 +122,8 @@ app.post('/create', function(request, res) {
         // Execute SQL query that'll select the account from the database based on the specified username and password
 
         //INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
-
-
-
-        connection.query('SELECT id FROM accounts', function(error, results, fields) {
-            // If there is an issue with the query, output the error
-            if (error) throw error;
-            countcreate = Object.keys(results).length;
-
-
-            connection.query(`INSERT INTO \`accounts\` (\`id\`, \`username\`, \`password\`, \`highscore1\`) VALUES (${countcreate + 1}, '${username}', '${password}', 0);`, [username, password], function(error, results, fields) {
+        if (usernamee() == false) {
+            connection.query(`INSERT INTO \`accounts\` (\`id\`, \`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES (${countcreate + 1}, '${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
                 // If there is an issue with the query, output the error
                 if (error) throw error;
                 // If the account exists
@@ -114,10 +135,15 @@ app.post('/create', function(request, res) {
                 }
                 res.end();
             });
+        } else {
+            res.send('Il a déjà un utilisateur avec ce nom là !');
+            res.end();
+        }
 
-        });
+
+
     } else {
-        res.send('Please enter Username and Password!');
+        res.send('Veuillez entrer un Username et un Password!');
         res.end();
     }
 
@@ -148,20 +174,6 @@ app.post('/auth', function(request, res) {
     }
 });
 
-// http://localhost:3000/home
-app.get('/home', function(request, res, next) {
-    // Si l'utilisateur est connecté
-    if (request.session.loggedin) {
-        // Output username
-        res.send('<a href="/Snake">Snake</a> Re, ' + request.session.username + '!');
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-    res.end();
-});
-
 
 app.get('/snake', function(request, res) {
 
@@ -178,14 +190,15 @@ app.post('/highscore', function(request, res) {
     let highscore = request.body.highscore;
     let username = request.session.username;
 
-    connection.query(`SELECT highscore1 FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
+    connection.query(`SELECT snake FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) throw error;
-        console.log(results[0].highscore1)
-        if (results[0].highscore1 < highscore) {
-            connection.query(`UPDATE accounts SET highscore1 = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
+        console.log(results[0].snake)
+        if (results[0].snake < highscore) {
+            connection.query(`UPDATE accounts SET snake = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
                 // If there is an issue with the query, output the error"
                 if (error) throw error;
+                res.redirect("/gg")
                 res.end();
             });
         } else {
@@ -197,22 +210,29 @@ app.post('/highscore', function(request, res) {
 
 });
 
+
 const cheerio = require('cheerio');
-var tableauchiffre = ["", ""];
-var tableauvraichiffre = [0, 0];
+
+var highscoretableaucomplet = {
+    "username": ["", ""],
+    "snake": [0, 0],
+}
+
 var count = 0;
 
 app.post('/gg', function(request, res) {
 
     if (request.session.loggedin) {
 
-        connection.query(`SELECT highscore1,username FROM accounts`, function(error, results, fields) {
+        connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) throw error;
             count = Object.keys(results).length;
-            for (i = 0; i <= count - 1; i++) {
-                tableauchiffre[i] = results[i].highscore1;
-                tableauvraichiffre[i] = results[i].username;
+            for (i = 0; i < count; i++) {
+                highscoretableaucomplet.username[i] = results[i].username;
+
+                highscoretableaucomplet.snake[i] = results[i].snake;
+
             }
 
             res.redirect("/gg");
@@ -228,42 +248,60 @@ app.post('/gg', function(request, res) {
 
 app.get('/gg', function(request, res) {
 
+
     const document = `<!DOCTYPE html>
-	<html>
-	
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width,minimum-scale=1">
-		<title>GG</title>
-	</head>
-	
-	<body>
-		<form action="/gg" method="post"> <label for="gg">
-				<!-- font awesome icon --> <i class="fas fa-gg"></i>
-			</label> <input type="submit" value="gg"> </form>
-			<table>  
-				<tr><th>Username</th><th>HighscoreSnake</th></tr>  
-				<tr><td>Tableau</td><td>0</td></tr>  
-				</table>
-	</body>
-	
-	</html>`;
+    <html>
+    
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,minimum-scale=1">
+        <title>GG</title>
+    </head>
+    
+    <body>
+        <form action="/gg" method="post"> <label for="gg">
+                    <!-- font awesome icon --> <i class="fas fa-gg"></i>
+                </label> <input type="submit" value="gg"> </form>
+        <table>
+            <tr>
+                <th>Username</th>
+                <th>Snake</th>
+                <th>Tetris</th>
+                <th>TD</th>
+                <th>Speed</th>
+                <th>Brick</th>
+                <th>Flappy</th>
+            </tr>
+            <tr>
+                <td>Name</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+                <td>0</td>
+            </tr>
+        </table>
+    </body>
+    
+    </html>`;
 
     const $ = cheerio.load(document);
 
-    if (!tableauchiffre || tableauchiffre[0] == "") {
 
-    } else {
 
-        for (i = 0; i < count; i++) {
-            $('table').append(`<tr><td>${tableauvraichiffre[i]}</td><td>${tableauchiffre[i]}</td></tr>`);
-        }
-
-        //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);
+    for (i = 0; i < count; i++) {
+        $('table').append(`<tr><td>${highscoretableaucomplet.username[i] }</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
     }
+
+    //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);
+
+    console.log(highscoretableaucomplet)
+
     res.send($.html());
 
     res.end();
+
 
 });
 
