@@ -2,6 +2,7 @@ const mysql = require('mysql');
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
+const cookieParser = require('cookie-parser')
 
 const connection = mysql.createConnection({
     host: 'mysql-bellone.alwaysdata.net',
@@ -17,14 +18,24 @@ app.use(session({
     resave: true,
     saveUninitialized: true
 }));
+
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Page web')));
 
 // http://localhost:3000/
 app.get('/', function(request, res) {
-    // Render login template
-    res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+    if(request.cookies.home == "nohome"){
+         // Render login template
+        res.redirect("/login")
+  
+    }else {
+  res.cookie(`home` ,`nohome`);
+  res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+    }
+
+
 });
 
 app.get('/play', function(request, res) {
@@ -376,11 +387,19 @@ app.get('/username', function(request, res) {
 });
 
 app.get('/game', function(request, res) {
+
     res.render('game')
+
 });
 
 app.get('/td', function(request, res) {
 
     res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
+
+});
+
+app.get('/snake2', function(request, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
 
 });
