@@ -338,11 +338,19 @@ app.get('/username', function(request, res) {
 });
 
 app.get('/game', function(request, res) {
+
     res.render('game')
+
 });
 
 app.get('/td', function(request, res) {
 
     res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
+
+});
+
+app.get('/snake2', function(request, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
 
 });
