@@ -26,13 +26,13 @@ app.use(express.static(path.join(__dirname, 'Page web')));
 
 // http://localhost:3000/
 app.get('/', function(request, res) {
-    if(request.cookies.home == "nohome"){
-         // Render login template
+    if (request.cookies.home == "nohome") {
+        // Render login template
         res.redirect("/login")
-  
-    }else {
-  res.cookie(`home` ,`nohome`);
-  res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+
+    } else {
+        res.cookie(`home`, `nohome`);
+        res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
     }
 
 
