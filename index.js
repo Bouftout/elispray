@@ -41,7 +41,7 @@ app.get('/', function(request, res) {
 app.get('/play', function(request, res) {
     // Render login template
     if (request.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/pagePlay2.ejs'));
+        res.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
 
     } else {
         // Pas connectée.
