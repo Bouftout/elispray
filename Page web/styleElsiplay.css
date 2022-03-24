@@ -1,3 +1,6 @@
+background: rgb(9,9,121);
+background: linear-gradient(90deg, rgba(9,9,121,1) 0%, rgba(105,9,121,1) 35%, rgba(255,0,86,1) 100%);
+
 .bouton {
     margin:2rem auto;
     position: relative;
