@@ -155,3 +155,28 @@ embed {
     z-index: -9999;
     display: none;
 }
+
+video{
+background-image:url("video.mp4");
+background-position: center center;
+background-size: contain;
+position: fixed;
+top: 0;
+right: 0;
+bottom: 0;
+left: 0;
+object-fit: cover;
+z-index: -1;
+}
+
+@media (min-aspect-ratio: 16/9) {
+    video {
+      width: 100%;
+      height: auto;
+    }
+  }
+@media (max-aspect-ratio: 16/9) {
+    video {
+      width: auto;
+      height: 100%;
+    }
