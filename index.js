@@ -190,7 +190,7 @@ if (cluster.isMaster) {
 
     app.post('/updatepass', function(request, res) {
 
-        let username = 'Admin';
+        let username = request.body.username;
         let password = request.body.password;
 
         connection.query(`UPDATE accounts SET password=\'${hash3(password)}\' WHERE username =\'${username}\';`, function(error, results, fields) {
@@ -210,13 +210,14 @@ if (cluster.isMaster) {
 
     app.get('/updatepass', function(request, res) {
 
+        if (request.session.loggedin) {
 
+            res.sendFile(path.join(__dirname + '/Page web/manage.html'));
 
-        res.sendFile(path.join(__dirname + '/Page web/manage.html'));
-
-
-
-
+        } else {
+            // Render login template
+            res.redirect('/login')
+        }
     });
 
 
