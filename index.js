@@ -16,14 +16,11 @@ if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`);
 
 
-    if (port != 3000) {
+    // Fork workers.
+    for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
-    } else {
-        // Fork workers.
-        for (let i = 0; i < numCPUs; i++) {
-            cluster.fork();
-        }
     }
+
 
 
     // This event is firs when worker died
@@ -145,7 +142,6 @@ if (cluster.isMaster) {
         let username = request.body.username;
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
-        console.log(`HASH3 create ${password}`)
 
         // Ensure the input fields exists and are not empty
         if (username && password) {
@@ -170,7 +166,10 @@ if (cluster.isMaster) {
                         // If the account exists
 
                         if (results.protocol41 == true) {
-                            res.redirect("/login")
+                            request.session.loggedin = true;
+                            request.session.username = username;
+                            // rediction page play.
+                            res.redirect('/play');
                         } else {
                             res.redirect("/create")
                         }
