@@ -16,11 +16,15 @@ if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`);
 
 
-
-    // Fork workers.
-    for (let i = 0; i < numCPUs; i++) {
+    if (port != 3000) {
         cluster.fork();
+    } else {
+        // Fork workers.
+        for (let i = 0; i < numCPUs; i++) {
+            cluster.fork();
+        }
     }
+
 
     // This event is firs when worker died
     cluster.on('exit', (worker, code, signal) => {
