@@ -17,10 +17,9 @@ if (cluster.isMaster) {
 
 
     // Fork workers.
-    for (let i = 0; i < numCPUs; i++) {
+   // for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
-    }
-
+    //}
 
 
     // This event is firs when worker died
@@ -36,9 +35,6 @@ if (cluster.isMaster) {
             console.log("Error in server setup") :
             console.log(`Worker ${process.pid} started`);
     });
-
-
-
 
     const connection = mysql.createConnection({ //connection bdd
         host: 'mysql-bellone.alwaysdata.net',
@@ -130,9 +126,11 @@ if (cluster.isMaster) {
 
     function hash3(password) {
         const pass = `${password}XHAMAC1guUCaI9jUu6E3s3SCORAfZQqAqt0ty8VGQL1yWfPnSoJuRiip5mmnlISkXFyxaLpQdNpqYZSDSxZ25IP1AUAncFOsbsMY11VfyeilrWiIjNPdQ3MAc2FSBjMVJbSrGj6`;
-        const buf_pass = Buffer.from(pass);
 
-        return password = hasher3.hash(buf_pass);
+        const buf_pass = Buffer.from(pass);
+        const passwords = hasher3.hash(buf_pass);
+        hasher3.reset();
+        return passwords;
     }
 
 
@@ -231,12 +229,10 @@ if (cluster.isMaster) {
         let username = request.body.username;
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
-        console.log(`HASH3 AUTH: ${password}`)
 
         if (username && password) {
             connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) throw error;
-
                 if (results.length > 0) {
                     request.session.loggedin = true;
                     request.session.username = username;
@@ -272,7 +268,6 @@ if (cluster.isMaster) {
         connection.query(`SELECT snake FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) throw error;
-            console.log(results[0].snake)
             if (results[0].snake < highscore) {
                 connection.query(`UPDATE accounts SET snake = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
                     // If there is an issue with the query, output the error"
@@ -281,7 +276,8 @@ if (cluster.isMaster) {
                     res.end();
                 });
             } else {
-                console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd")
+                res.send("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd");
+                res.end();
             }
 
 
@@ -374,8 +370,6 @@ if (cluster.isMaster) {
         }
 
         //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);
-
-        console.log(highscoretableaucomplet)
 
         res.send($.html());
 
