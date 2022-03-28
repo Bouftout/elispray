@@ -17,9 +17,9 @@ if (cluster.isMaster) {
 
 
     // Fork workers.
-   // for (let i = 0; i < numCPUs; i++) {
+    for (let i = 0; i < numCPUs; i++) {
         cluster.fork();
-    //}
+    }
 
 
     // This event is firs when worker died
