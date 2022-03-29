@@ -1,43 +1,46 @@
 {
-  "name": "elispray",
-  "version": "1.0.0",
-  "description": "Project de groupe",
-  "main": "index.js",
-  "scripts": {
-    "test": "nodemon index.js",
-    "start": "node index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Bouftout/elispray.git"
-  },
-  "keywords": [
-    "elispray"
-  ],
-  "author": "Toni",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Bouftout/elispray/issues"
-  },
-  "homepage": "https://github.com/Bouftout/elispray#readme",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.10",
-    "cluster": "^0.7.7",
-    "cookie-parser": "^1.4.6",
-    "ejs": "^3.1.6",
-    "express": "^4.17.3",
-    "express-session": "^1.17.2",
-    "html-to-text": "^8.1.0",
-    "http": "^0.0.1-security",
-    "mysql": "^2.18.1",
-    "os": "^0.1.2",
-    "path": "^0.12.7",
-    "phaser": "^3.55.2",
-    "socket.io": "^4.4.1",
-    "xxhash-addon": "^1.4.0"
-  },
-  "optionalDependencies": {
-    "bufferutil": "^4.0.6",
-    "utf-8-validate": "^5.0.9"
-  }
+    "name": "elispray",
+    "version": "1.0.0",
+    "description": "Project de groupe",
+    "main": "index.js",
+    "scripts": {
+        "test": "nodemon index.js",
+        "start": "node index.js"
+    },
+    "nodemonConfig": {
+        "ignore": ["Page web/*"]
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Bouftout/elispray.git"
+    },
+    "keywords": [
+        "elispray"
+    ],
+    "author": "Toni",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/Bouftout/elispray/issues"
+    },
+    "homepage": "https://github.com/Bouftout/elispray#readme",
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.10",
+        "cluster": "^0.7.7",
+        "cookie-parser": "^1.4.6",
+        "ejs": "^3.1.6",
+        "express": "^4.17.3",
+        "express-session": "^1.17.2",
+        "html-to-text": "^8.1.0",
+        "http": "^0.0.1-security",
+        "mysql": "^2.18.1",
+        "os": "^0.1.2",
+        "path": "^0.12.7",
+        "phaser": "^3.55.2",
+        "socket.io": "^4.4.1",
+        "xxhash-addon": "^1.4.0"
+    },
+    "optionalDependencies": {
+        "bufferutil": "^4.0.6",
+        "utf-8-validate": "^5.0.9"
+    }
 }

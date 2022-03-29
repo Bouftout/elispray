@@ -16,8 +16,8 @@ if (cluster.isMaster) {
 
     // Fork workers.
 
-        cluster.fork();
-    
+    cluster.fork();
+
 
 
     // This event is firs when worker died
@@ -147,7 +147,9 @@ if (cluster.isMaster) {
 
             connection.query('SELECT username FROM accounts', function(error, resultaccount, fields) {
                 // If there is an issue with the query, output the error
-                if (error) throw error;
+                if (error) {
+                    return res.redirect("/login");
+                }
                 var verifusername = false;
                 for (i = 0; i < Object.keys(resultaccount).length; i++) {
                     if (resultaccount[i].username == username) {
@@ -158,7 +160,9 @@ if (cluster.isMaster) {
                 if (verifusername == false) {
                     connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
                         // If there is an issue with the query, output the error
-                        if (error) throw error;
+                        if (error) {
+                            return res.redirect("/login");
+                        }
                         // If the account exists
 
                         if (results.protocol41 == true) {
@@ -194,7 +198,9 @@ if (cluster.isMaster) {
 
         connection.query(`UPDATE accounts SET password=\'${hash3(password)}\' WHERE username =\'${username}\';`, function(error, results, fields) {
             // If there is an issue with the query, output the error
-            if (error) throw error;
+            if (error) {
+                return res.redirect("/login");
+            }
             // If the account exists
 
             if (results.protocol41 == true) {
@@ -230,7 +236,9 @@ if (cluster.isMaster) {
 
         if (username && password) {
             connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
-                if (error) throw error;
+                if (error) {
+                    return res.redirect("/login");
+                }
                 if (results.length > 0) {
                     request.session.loggedin = true;
                     request.session.username = username;
@@ -261,20 +269,23 @@ if (cluster.isMaster) {
     app.post('/highscore', function(request, res) {
         // Capture the input fields
         let highscore = request.body.highscore;
+        let qui = request.body.qui;
         let username = request.session.username;
 
-        connection.query(`SELECT snake FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
+        connection.query(`SELECT ${qui} FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
             // If there is an issue with the query, output the error
-            if (error) throw error;
+            if (error) {
+                return res.redirect("/login");
+            }
             if (results[0].snake < highscore) {
-                connection.query(`UPDATE accounts SET snake = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
+                connection.query(`UPDATE accounts SET ${qui} = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
                     // If there is an issue with the query, output the error"
-                    if (error) throw error;
-                    res.redirect("/gg")
-                    res.end();
+                    if (error) {
+                        return res.redirect("/login");
+                    }
                 });
             } else {
-                res.send("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd");
+                console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd");
                 res.end();
             }
 
@@ -299,7 +310,9 @@ if (cluster.isMaster) {
 
             connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
                 // If there is an issue with the query, output the error
-                if (error) throw error;
+                if (error) {
+                    return res.redirect("/login");
+                }
                 count = Object.keys(results).length;
                 for (i = 0; i < count; i++) {
                     highscoretableaucomplet.username[i] = results[i].username;
@@ -439,32 +452,62 @@ if (cluster.isMaster) {
     });
 
     app.get('/game', function(request, res) {
+        if (request.session.loggedin) {
 
-        res.render('game')
+            res.render('game')
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
 
     });
 
     app.get('/td', function(request, res) {
+        if (request.session.loggedin) {
 
-        res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
+            res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
 
     });
 
     app.get('/snake2', function(request, res) {
+        if (request.session.loggedin) {
 
-        res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
+            res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
 
     });
 
     app.get('/brick', function(request, res) {
+        if (request.session.loggedin) {
 
-        res.sendFile(path.join(__dirname + '/Page web/brick/index.html'));
+            res.sendFile(path.join(__dirname + '/Page web/brick/index.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
 
     });
 
     app.get('/undertale', function(request, res) {
+        if (request.session.loggedin) {
 
-        res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
+            res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
 
     });
 

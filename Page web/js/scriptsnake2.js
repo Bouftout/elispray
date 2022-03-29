@@ -1,3 +1,44 @@
+function highscorestart() {
+    if (!localStorage.jsSnakeHighScore) {
+        localStorage.setItem("jsSnakeHighScore", 0);
+    }
+    document.getElementById("besthighscore").innerHTML = "Best Highscore : " + localStorage.jsSnakeHighScore
+}
+
+function submit() {
+
+    fetch(`${document.location.origin}/highscore`, {
+
+            // Adding method type
+            method: "POST",
+
+            // Adding body or contents to send
+            body: JSON.stringify({
+                highscore: (localStorage.jsSnakeHighScore),
+                qui: "snake",
+            }),
+
+            // Adding headers to the request
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+        // Converting to JSON
+        .then(response => response.json())
+        // Displaying results to console
+        .then(json => console.log(json));
+
+    document.getElementById("info").innerHTML = "Submit data BDD";
+    setTimeout(() => {
+        document.getElementById("info").innerHTML = "."
+    }, 3000);
+}
+
+window.addEventListener('beforeunload', function(e) {
+    e.preventDefault();
+    submit();
+});
+
 
 var config = {
     type: Phaser.WEBGL,
@@ -49,7 +90,7 @@ function create() {
             scene.children.add(this);
         },
 
-        eat: function () {
+        eat: function() {
             this.total++;
         },
     });
@@ -75,42 +116,42 @@ function create() {
             this.direction = RIGHT;
         },
 
-        update: function (time) {
+        update: function(time) {
             if (time >= this.moveTime) {
                 return this.move(time);
             }
         },
 
-        faceLeft: function () {
+        faceLeft: function() {
             if (this.direction === UP || this.direction === DOWN) {
                 this.heading = LEFT;
             }
         },
 
-        faceRight: function () {
+        faceRight: function() {
             if (this.direction === UP || this.direction === DOWN) {
                 this.heading = RIGHT;
             }
         },
 
-        faceUp: function () {
+        faceUp: function() {
             if (this.direction === LEFT || this.direction === RIGHT) {
                 this.heading = UP;
             }
         },
 
-        faceDown: function () {
+        faceDown: function() {
             if (this.direction === LEFT || this.direction === RIGHT) {
                 this.heading = DOWN;
             }
         },
-        reset: function () {
+        reset: function() {
             this.heading = "RESET";
-            food.total = 0
+            food.total = 0;
             this.speed = 100;
         },
 
-        move: function (time) {
+        move: function(time) {
             /**
              * Based on the heading property (which is the direction the pgroup pressed)
              * we update the headPosition value accordingly.
@@ -157,27 +198,27 @@ function create() {
                     break;
 
                 case UP:
-                    if(  (                this.headPosition.y = Phaser.Math.Wrap(
-                        this.headPosition.y,
-                        0,
-                        30
-                    )) == 0 ){
+                    if ((this.headPosition.y = Phaser.Math.Wrap(
+                            this.headPosition.y,
+                            0,
+                            30
+                        )) == 0) {
                         dead()
-                    }else{
-                    this.headPosition.y = Phaser.Math.Wrap(
-                        this.headPosition.y - 1,
-                        0,
-                        30
-                    );
+                    } else {
+                        this.headPosition.y = Phaser.Math.Wrap(
+                            this.headPosition.y - 1,
+                            0,
+                            30
+                        );
                     }
                     break;
 
                 case DOWN:
                     if ((this.headPosition.y = Phaser.Math.Wrap(
-                        this.headPosition.y,
-                        0,
-                        30
-                    )) == 29) {
+                            this.headPosition.y,
+                            0,
+                            30
+                        )) == 29) {
                         dead()
                     } else {
                         this.headPosition.y = Phaser.Math.Wrap(
@@ -199,12 +240,12 @@ function create() {
                         40
                     )
                     this.heading = RIGHT;
-                    if(retientgrow){
+                    if (retientgrow) {
                         for (var i = 0; i < retientgrow.length; i++) {
                             (retientgrow[i]).destroy()
-                          }
+                        }
                     }
-     
+
                     onedead = false;
                     break;
             }
@@ -224,8 +265,7 @@ function create() {
             //  If they do, the head ran into the body
 
             var hitBody = Phaser.Actions.GetFirst(
-                this.body.getChildren(),
-                { x: this.head.x, y: this.head.y },
+                this.body.getChildren(), { x: this.head.x, y: this.head.y },
                 1
             );
 
@@ -239,17 +279,24 @@ function create() {
             }
         },
 
-        grow: function () {
+        grow: function() {
             var newPart = this.body.create(this.tail.x, this.tail.y, "body");
             retientgrow.push(newPart);
             newPart.setOrigin(0);
         },
 
-        collideWithFood: function (food) {
+        collideWithFood: function(food) {
             if (this.head.x === food.x && this.head.y === food.y) {
                 this.grow();
 
                 food.eat();
+
+                //Highscore
+                document.getElementById("highscore").innerHTML = "Highscore : " + food.total;
+                if (localStorage.jsSnakeHighScore < food.total) {
+                    localStorage.setItem("jsSnakeHighScore", food.total);
+                    document.getElementById("besthighscore").innerHTML = "Best Highscore : " + localStorage.jsSnakeHighScore;
+                }
 
                 //  For every 5 items of food eaten we'll increase the snake speed a little
                 if (this.speed > 15 && food.total % 5 === 0) {
@@ -262,9 +309,9 @@ function create() {
             }
         },
 
-        updateGrid: function (grid) {
+        updateGrid: function(grid) {
             //  Remove all body pieces from valid positions list
-            this.body.children.each(function (segment) {
+            this.body.children.each(function(segment) {
                 var bx = segment.x / 16;
                 var by = segment.y / 16;
 
@@ -373,12 +420,14 @@ function dead() {
 
     if (onedead == false) {
         onedead = true;
+        document.getElementById("highscore").innerHTML = "Highscore : 0"
         repositionFood()
         snake.reset();
-        alert("Vous êtes mort")
 
-
+        document.getElementById("info").innerHTML = "Vous êtes mort !"
+        setTimeout(() => {
+            document.getElementById("info").innerHTML = "."
+        }, 500);
     }
 
 }
-
