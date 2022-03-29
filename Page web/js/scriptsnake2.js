@@ -25,20 +25,14 @@ var RIGHT = 3;
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.glsl('bundle', 'assets/shaders/bundle.glsl.js');
 
     this.load.image("food", "assets/games/snake/food.png");
     this.load.image("body", "assets/games/snake/body.png");
 }
 
+var retientgrow = [];
 
 function create() {
-    
-    var shader = this.add.shader('Tunnel', 321, 240, 640, 480, [ 'body' ]);
-
-    shader.setInteractive();
-
-
 
     var Food = new Phaser.Class({
         Extends: Phaser.GameObjects.Image,
@@ -110,6 +104,11 @@ function create() {
                 this.heading = DOWN;
             }
         },
+        reset: function () {
+            this.heading = "RESET";
+            food.total = 0
+            this.speed = 100;
+        },
 
         move: function (time) {
             /**
@@ -158,19 +157,55 @@ function create() {
                     break;
 
                 case UP:
+                    if(  (                this.headPosition.y = Phaser.Math.Wrap(
+                        this.headPosition.y,
+                        0,
+                        30
+                    )) == 0 ){
+                        dead()
+                    }else{
                     this.headPosition.y = Phaser.Math.Wrap(
                         this.headPosition.y - 1,
                         0,
                         30
                     );
+                    }
                     break;
 
                 case DOWN:
+                    if ((this.headPosition.y = Phaser.Math.Wrap(
+                        this.headPosition.y,
+                        0,
+                        30
+                    )) == 29) {
+                        dead()
+                    } else {
+                        this.headPosition.y = Phaser.Math.Wrap(
+                            this.headPosition.y + 1,
+                            0,
+                            30
+                        );
+                    }
+                    break;
+                case "RESET":
                     this.headPosition.y = Phaser.Math.Wrap(
-                        this.headPosition.y + 1,
+                        16,
                         0,
                         30
                     );
+                    this.headPosition.x = Phaser.Math.Wrap(
+                        16,
+                        0,
+                        40
+                    )
+                    this.heading = RIGHT;
+                    if(retientgrow){
+                        for (var i = 0; i < retientgrow.length; i++) {
+                            (retientgrow[i]).destroy()
+                          }
+                    }
+     
+                    onedead = false;
                     break;
             }
 
@@ -196,9 +231,6 @@ function create() {
 
             if (hitBody) {
                 dead();
-                this.alive = false;
-
-                return false;
             } else {
                 //  Update the timer ready for the next movement
                 this.moveTime = time + this.speed;
@@ -209,7 +241,7 @@ function create() {
 
         grow: function () {
             var newPart = this.body.create(this.tail.x, this.tail.y, "body");
-
+            retientgrow.push(newPart);
             newPart.setOrigin(0);
         },
 
@@ -220,8 +252,7 @@ function create() {
                 food.eat();
 
                 //  For every 5 items of food eaten we'll increase the snake speed a little
-                if (this.speed > 20 && food.total % 5 === 0) {
-                    console.log("speed");
+                if (this.speed > 15 && food.total % 5 === 0) {
                     this.speed -= 1;
                 }
 
@@ -275,7 +306,7 @@ function update(time, delta) {
     }
 
     if (cursors.space.isDown) {
-        this.scene.restart()
+        dead()
     }
 
     if (snake.update(time)) {
@@ -342,11 +373,12 @@ function dead() {
 
     if (onedead == false) {
         onedead = true;
-confirm("Vous êtes mort")
-            
-        
-        location.reload();
+        repositionFood()
+        snake.reset();
+        alert("Vous êtes mort")
+
+
     }
-    
+
 }
 

@@ -4,8 +4,6 @@ const mysql = require('mysql'),
     path = require('path'),
     cluster = require('cluster'),
     cookieParser = require('cookie-parser'),
-    numCPUs = require('os').cpus().length,
-    portws = (process.env.PORT || 8080),
     port = (process.env.PORT || 3000),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
@@ -17,9 +15,9 @@ if (cluster.isMaster) {
 
 
     // Fork workers.
-    for (let i = 0; i < numCPUs; i++) {
+
         cluster.fork();
-    }
+    
 
 
     // This event is firs when worker died
