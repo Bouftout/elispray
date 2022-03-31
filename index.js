@@ -407,17 +407,39 @@ if (cluster.isMaster) {
                 wordwrap: 130
             });
 
-            io.emit("helloserv", username, textmsg);
+            io.to("chat").emit("helloserv", username, textmsg);
 
         });
 
 
         socket.on("typingserv", (arg, username) => {
-            io.emit("typing", arg, username);
+            io.to("chat").emit("typing", arg, username);
         });
 
         socket.on("nvplayerserv", (arg, username) => {
-            io.emit("nvplayer", arg, username);
+            socket.join("chat");
+
+            io.to("chat").emit("nvplayer", arg, username);
+        });
+
+        socket.on("typingserv", (arg, username) => {
+            io.to("chat").emit("typing", arg, username);
+        });
+
+        socket.on("courtconnectserv", (nbroom) => {
+            console.log(nbroom)
+            socket.join(nbroom);
+            io.to(nbroom).emit("nvplayercourt", nbroom);
+        });
+
+
+        socket.on("ggtoucheserv", (id, nbroom) => {
+            console.log("ggtoucheserv" + nbroom)
+            io.to(nbroom).emit("perdue", id);
+        });
+
+        socket.on("perduetoucheserv", (id, nbroom) => {
+            io.to(nbroom).emit("gg", id);
         });
 
     });

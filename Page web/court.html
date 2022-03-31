@@ -1,208 +1,293 @@
 <!DOCTYPE html>
 <html>
-  <head>
+
+<head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,minimum-scale=1" />
     <title>
-      Ultimate arena battle fight 4 remasterd origins, the retrun of the
-      forgoten dragon premium edition ++ alpha beta omega
+        Ultimate arena battle fight 4 remasterd origins, the retrun of the forgoten dragon premium edition ++ alpha beta omega
     </title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
 
     <!-- Ultimate arena battle fight 4 remasterd origins, the retrun of the forgoten dragon premium edition ++ alpha beta omega -->
-  </head>
+</head>
 
-  <body onload="start()">
+<body onload="start()">
     <h1>
-      Ultimate arena battle fight 4 remasterd origins, the retrun of the
-      forgoten dragon premium edition ++ alpha beta omega
+        Ultimate arena battle fight 4 remasterd origins, the retrun of the forgoten dragon premium edition ++ alpha beta omega
     </h1>
+    <h3 id="nbroomid">Room : ?</h3>
 
     <script>
-      function start() {
-        function strRandom(o) {
-          var a = 10,
-            b = "abcdefghijklmnopqrstuvwxyz",
-            c = "",
-            d = 0,
-            e = "" + b;
-          if (o) {
-            if (o.startsWithLowerCase) {
-              c = b[Math.floor(Math.random() * b.length)];
-              d = 1;
+        function start() {
+            function strRandom(o) {
+                var a = 10,
+                    b = "abcdefghijklmnopqrstuvwxyz",
+                    c = "",
+                    d = 0,
+                    e = "" + b;
+                if (o) {
+                    if (o.startsWithLowerCase) {
+                        c = b[Math.floor(Math.random() * b.length)];
+                        d = 1;
+                    }
+                    if (o.length) {
+                        a = o.length;
+                    }
+                    if (o.includeUpperCase) {
+                        e += b.toUpperCase();
+                    }
+                    if (o.includeNumbers) {
+                        e += "1234567890";
+                    }
+                }
+                for (; d < a; d++) {
+                    c += e[Math.floor(Math.random() * e.length)];
+                }
+                return c;
             }
-            if (o.length) {
-              a = o.length;
+
+            function toucheclick(e) {
+                var strrandom = strRandom({
+                    includeUpperCase: true,
+                    includeNumbers: true,
+                    length: 1,
+                    startsWithLowerCase: true,
+                });
+                document.getElementById("toucheacliquer").innerHTML = strrandom;
             }
-            if (o.includeUpperCase) {
-              e += b.toUpperCase();
+
+            function quelletre(chiffre) {
+                switch (chiffre) {
+                    case 97:
+                        return "A";
+                        break;
+                    case 122:
+                        return "Z";
+                        break;
+                    case 101:
+                        return "E";
+                        break;
+                    case 114:
+                        return "R";
+                        break;
+                    case 116:
+                        return "T";
+                        break;
+                    case 121:
+                        return "Y";
+                        break;
+                    case 117:
+                        return "U";
+                        break;
+                    case 105:
+                        return "I";
+                        break;
+                    case 111:
+                        return "O";
+                        break;
+                    case 112:
+                        return "P";
+                        break;
+                    case 113:
+                        return "Q";
+                        break;
+                    case 115:
+                        return "S";
+                        break;
+                    case 100:
+                        return "D";
+                        break;
+                    case 102:
+                        return "F";
+                        break;
+                    case 103:
+                        return "G";
+                        break;
+                    case 104:
+                        return "H";
+                        break;
+                    case 106:
+                        return "J";
+                        break;
+                    case 107:
+                        return "K";
+                        break;
+                    case 108:
+                        return "L";
+                        break;
+                    case 109:
+                        return "M";
+                        break;
+                    case 119:
+                        return "W";
+                        break;
+                    case 120:
+                        return "X";
+                        break;
+                    case 99:
+                        return "C";
+                        break;
+                    case 118:
+                        return "V";
+                        break;
+                    case 98:
+                        return "B";
+                        break;
+                    case 110:
+                        return "N";
+                        break;
+                    case 49:
+                        return "1";
+                        break;
+                    case 50:
+                        return "2";
+                        break;
+                    case 51:
+                        return "3";
+                        break;
+                    case 52:
+                        return "4";
+                        break;
+                    case 53:
+                        return "5";
+                        break;
+                    case 54:
+                        return "6";
+                        break;
+                    case 55:
+                        return "7";
+                        break;
+                    case 56:
+                        return "8";
+                        break;
+                    case 57:
+                        return "9";
+                        break;
+                    case 48:
+                        return "0";
+                        break;
+                }
             }
-            if (o.includeNumbers) {
-              e += "1234567890";
+
+
+            $("form").keypress(function(e) {
+                let nbroom = document.getElementById("inputlogin").value;
+                console.log(quelletre(e.keyCode));
+                console.log(
+                    "TOCUHECLIQUER " +
+                    document.getElementById("toucheacliquer").innerHTML
+                );
+                if (
+                    quelletre(e.keyCode) ==
+                    document
+                    .getElementById("toucheacliquer")
+                    .innerHTML.toLocaleUpperCase()
+                ) {
+                    socket.emit("ggtoucheserv", socket.id, nbroom)
+                    toucheclick(e);
+                    Timer();
+                } else {
+                    socket.emit("perduetoucheserv", socket.id, nbroom)
+                    alert("Mauvaise touche");
+                }
+            });
+
+            let timer = 0;
+
+            function Timer() {
+                timer++;
+                document.getElementById("timerid").innerHTML = timer;
             }
-          }
-          for (; d < a; d++) {
-            c += e[Math.floor(Math.random() * e.length)];
-          }
-          return c;
+
+            //socket.io
+
+            const socket = io({
+                auth: (cb) => {
+                    cb(localStorage.getItem("token"));
+                }
+            });
+
+            socket.on("connect_error", () => {
+                setTimeout(() => {
+                    socket.connect();
+                }, 1000);
+            });
+
+            // client-side
+            socket.on("connect", () => {
+                const engine = socket.io.engine;
+
+                engine.on("upgrade", () => {
+                    const upgradedTransport = socket.io.engine.transport.name; // in most cases, "websocket"
+                    console.log(upgradedTransport)
+                });
+            });
+
+
+
+
+            (document.getElementById("submitroom")).addEventListener("click", function() {
+
+                let nbroom = document.getElementById("inputlogin").value;
+                socket.emit("courtconnectserv", nbroom)
+            });
+
+
+            socket.on("nvplayercourt", (nbroom) => {
+
+                document.getElementById("nbroomid").innerHTML = `Room : ${nbroom}`;
+
+            });
+
+            socket.on("gg", (id) => {
+
+                if (socket.id != id) {
+                    console.log("gg du socket gg")
+                } else if (socket.id == id) {
+                    console.log("perdue du socket gg")
+
+
+                }
+            });
+
+            socket.on("perdue", (id) => {
+                const bar = document.getElementById('progressbar');
+                //=> <div id="div1">Hi Champ!</div>
+
+                const valueprogress = bar.getAttribute('value');
+                console.log(valueprogress)
+                if (socket.id != id) {
+                    console.log("perdue du socket perdue")
+                    bar.setAttribute('value', (Number(valueprogress) - 1));
+                } else if (socket.id == id) {
+                    console.log("gg  du socket perdue")
+                    bar.setAttribute('value', (Number(valueprogress) + 1));
+                }
+            });
+
+
+
         }
-
-        function toucheclick(e) {
-          var strrandom = strRandom({
-            includeUpperCase: true,
-            includeNumbers: true,
-            length: 1,
-            startsWithLowerCase: true,
-          });
-          document.getElementById("toucheacliquer").innerHTML = strrandom;
-        }
-
-        function quelletre(chiffre) {
-          switch (chiffre) {
-            case 97:
-              return "A";
-              break;
-            case 122:
-              return "Z";
-              break;
-            case 101:
-              return "E";
-              break;
-            case 114:
-              return "R";
-              break;
-            case 116:
-              return "T";
-              break;
-            case 121:
-              return "Y";
-              break;
-            case 117:
-              return "U";
-              break;
-            case 105:
-              return "I";
-              break;
-            case 111:
-              return "O";
-              break;
-            case 112:
-              return "P";
-              break;
-            case 113:
-              return "Q";
-              break;
-            case 115:
-              return "S";
-              break;
-            case 100:
-              return "D";
-              break;
-            case 102:
-              return "F";
-              break;
-            case 103:
-              return "G";
-              break;
-            case 104:
-              return "H";
-              break;
-            case 106:
-              return "J";
-              break;
-            case 107:
-              return "K";
-              break;
-            case 108:
-              return "L";
-              break;
-            case 109:
-              return "M";
-              break;
-            case 119:
-              return "W";
-              break;
-            case 120:
-              return "X";
-              break;
-            case 99:
-              return "C";
-              break;
-            case 118:
-              return "V";
-              break;
-            case 98:
-              return "B";
-              break;
-            case 110:
-              return "N";
-              break;
-            case 49:
-              return "1";
-              break;
-            case 50:
-              return "2";
-              break;
-            case 51:
-              return "3";
-              break;
-            case 52:
-              return "4";
-              break;
-            case 53:
-              return "5";
-              break;
-            case 54:
-              return "6";
-              break;
-            case 55:
-              return "7";
-              break;
-            case 56:
-              return "8";
-              break;
-            case 57:
-              return "9";
-              break;
-            case 48:
-              return "0";
-              break;
-          }
-        }
-
-        $("form").keypress(function (e) {
-          console.log(e.keyCode);
-          console.log(e.which);
-
-          console.log(quelletre(e.keyCode));
-          console.log(
-            "TOCUHECLIQUER " +
-              document.getElementById("toucheacliquer").innerHTML
-          );
-          if (
-            quelletre(e.keyCode) ==
-            document
-              .getElementById("toucheacliquer")
-              .innerHTML.toLocaleUpperCase()
-          ) {
-            toucheclick(e);
-            Timer();
-          } else {
-            alert("Mauvaise touche");
-          }
-        });
-
-        let timer = 0;
-        function Timer() {
-          timer++;
-          document.getElementById("timerid").innerHTML = timer;
-        }
-      }
     </script>
-    <h4 id="timerid"></h4>
-    <p>Clique sur :</p>
-    <h1 id="toucheacliquer">A</h1>
 
-    <form method="get">Pour Jouer: <input type="text" name="game" /></form>
-  </body>
+    <div id="loginroom">
+
+        <p>La Room a laquelle vous voulez vous connectez :</p> <input id="inputlogin"></input>
+        <button id="submitroom">Connect Room</button>
+    </div>
+
+    <div id="">
+        <h4 id="timerid"></h4>
+        <p>Clique sur :</p>
+        <h1 id="toucheacliquer">A</h1>
+
+        <form method="get">Pour Jouer: <input type="text" name="game" /></form>
+        <br>
+
+        <progress id="progressbar" value='25' max='50'></progress>
+
+</body>
+
 </html>
