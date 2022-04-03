@@ -411,7 +411,6 @@ if (cluster.isMaster) {
 
         });
 
-
         socket.on("typingserv", (arg, username) => {
             io.to("chat").emit("typing", arg, username);
         });
@@ -426,12 +425,15 @@ if (cluster.isMaster) {
             io.to("chat").emit("typing", arg, username);
         });
 
-        socket.on("courtconnectserv", (nbroom) => {
-            console.log(nbroom)
-            socket.join(nbroom);
-            io.to(nbroom).emit("nvplayercourt", nbroom);
-        });
 
+
+
+        //Serv court
+        socket.on("courtconnectserv", (id, nbroom) => {
+            console.log(`nbchambre: ${nbroom}`)
+            socket.join(nbroom);
+            io.to(nbroom).emit("nvplayercourt", id, nbroom);
+        });
 
         socket.on("ggtoucheserv", (id, nbroom) => {
             console.log("ggtoucheserv" + nbroom)
@@ -440,6 +442,11 @@ if (cluster.isMaster) {
 
         socket.on("perduetoucheserv", (id, nbroom) => {
             io.to(nbroom).emit("gg", id);
+        });
+
+
+        socket.on("perduetoucheserv", (id, nbroom) => {
+            io.to(nbroom).emit("gg", id, nbroom);
         });
 
     });
@@ -525,6 +532,18 @@ if (cluster.isMaster) {
         if (request.session.loggedin) {
 
             res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
+
+    });
+
+    app.get('/pong', function(request, res) {
+        if (request.session.loggedin) {
+
+            res.sendFile(path.join(__dirname + '/Page web/pong/index.html'));
 
         } else {
             // Pas connectée.
