@@ -13,7 +13,7 @@
 
                 //`wss://${(document.location.origin).slice(7, -5)}:8080`
                 if ((document.location.origin).lastIndexOf("https") != -1) {
-                    const url = `wss://${documentlocation}`;
+                    const url = `ws://${documentlocation}`;
                     startws(url)
                 } else {
                     // Let us open a web socket
