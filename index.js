@@ -5,6 +5,7 @@ const mysql = require('mysql'),
     cluster = require('cluster'),
     cookieParser = require('cookie-parser'),
     port = (process.env.PORT || 3000),
+    portws = (process.env.PORT || 8080),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
     app = express();
@@ -148,6 +149,7 @@ if (cluster.isMaster) {
             connection.query('SELECT username FROM accounts', function(error, resultaccount, fields) {
                 // If there is an issue with the query, output the error
                 if (error) {
+                    console.log(error);
                     return res.redirect("/login");
                 }
                 var verifusername = false;
@@ -161,6 +163,7 @@ if (cluster.isMaster) {
                     connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
                         // If there is an issue with the query, output the error
                         if (error) {
+                            console.log(error);
                             return res.redirect("/login");
                         }
                         // If the account exists
@@ -199,6 +202,7 @@ if (cluster.isMaster) {
         connection.query(`UPDATE accounts SET password=\'${hash3(password)}\' WHERE username =\'${username}\';`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) {
+                console.log(error);
                 return res.redirect("/login");
             }
             // If the account exists
@@ -237,6 +241,7 @@ if (cluster.isMaster) {
         if (username && password) {
             connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) {
+                    console.log(error);
                     return res.redirect("/login");
                 }
                 if (results.length > 0) {
@@ -268,19 +273,24 @@ if (cluster.isMaster) {
 
     app.post('/highscore', function(request, res) {
         // Capture the input fields
-        let highscore = request.body.highscore;
-        let qui = request.body.qui;
-        let username = request.session.username;
-
-        connection.query(`SELECT ${qui} FROM accounts WHERE username = "${username}"`, function(error, results, fields) {
+        var highscore = Number(request.body.highscore);
+        var qui = request.body.qui;
+        var username = request.session.username;
+        connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) {
+                console.log(error);
                 return res.redirect("/login");
             }
+            // console.log(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`)
+            // console.log("highscore : " + highscore);
+            // console.log("results : " + results[0].snake);
             if (results[0].snake < highscore) {
-                connection.query(`UPDATE accounts SET ${qui} = ${highscore} WHERE username = "${username}";`, function(error, results, fields) {
+                //UPDATE `accounts` SET snake = 0 WHERE username = 'localhost';
+                connection.query(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`, function(error, results, fields) {
                     // If there is an issue with the query, output the error"
                     if (error) {
+                        console.log(error);
                         return res.redirect("/login");
                     }
                 });
@@ -311,6 +321,7 @@ if (cluster.isMaster) {
             connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
                 // If there is an issue with the query, output the error
                 if (error) {
+                    console.log(error);
                     return res.redirect("/login");
                 }
                 count = Object.keys(results).length;
@@ -551,6 +562,33 @@ if (cluster.isMaster) {
         }
 
     });
+
+
+    //WebSocket
+
+    app.get('/ws', function(request, res) {
+        if (request.session.loggedin) {
+
+            res.sendFile(path.join(__dirname + '/Page web/ws.html'));
+
+        } else {
+            // Pas connectée.
+            res.redirect("/login")
+        }
+
+    });
+
+    const { WebSocketServer } = require('ws')
+
+    const wss = new WebSocketServer({ port: 8080 })
+
+    wss.on('connection', (ws) => {
+        console.log("conncetion")
+        ws.on('message', (message) => {
+            console.log(`Received message => ${message}`)
+        })
+        ws.send('ho!')
+    })
 
 
 }

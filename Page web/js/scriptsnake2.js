@@ -6,27 +6,23 @@ function highscorestart() {
 }
 
 function submit() {
-
+    console.log(`${document.location.origin}/highscore`)
     fetch(`${document.location.origin}/highscore`, {
 
-            // Adding method type
-            method: "POST",
+        // Adding method type
+        method: "POST",
 
-            // Adding body or contents to send
-            body: JSON.stringify({
-                highscore: (localStorage.jsSnakeHighScore),
-                qui: "snake",
-            }),
+        // Adding body or contents to send
+        body: JSON.stringify({
+            highscore: (localStorage.jsSnakeHighScore),
+            qui: "snake"
+        }),
 
-            // Adding headers to the request
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            }
-        })
-        // Converting to JSON
-        .then(response => response.json())
-        // Displaying results to console
-        .then(json => console.log(json));
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
 
     document.getElementById("info").innerHTML = "Submit data BDD";
     setTimeout(() => {
@@ -34,10 +30,7 @@ function submit() {
     }, 3000);
 }
 
-window.addEventListener('beforeunload', function(e) {
-    e.preventDefault();
-    submit();
-});
+
 
 
 var config = {
@@ -296,6 +289,7 @@ function create() {
                 if (localStorage.jsSnakeHighScore < food.total) {
                     localStorage.setItem("jsSnakeHighScore", food.total);
                     document.getElementById("besthighscore").innerHTML = "Best Highscore : " + localStorage.jsSnakeHighScore;
+                    submit();
                 }
 
                 //  For every 5 items of food eaten we'll increase the snake speed a little
