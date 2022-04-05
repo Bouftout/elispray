@@ -140,6 +140,11 @@ if (cluster.isMaster) {
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
 
+        if (typeof username != "string" || typeof password != "string"){
+            res.send("Parametres invalides");
+            res.end();
+            return;
+           }
         // Ensure the input fields exists and are not empty
         if (username && password) {
             // Execute SQL query that'll select the account from the database based on the specified username and password
@@ -199,6 +204,12 @@ if (cluster.isMaster) {
         let username = request.body.username;
         let password = request.body.password;
 
+        if (typeof username != "string" || typeof password != "string"){
+            res.send("Paramètre invalide");
+            res.end();
+            return;
+           }
+
         connection.query(`UPDATE accounts SET password=\'${hash3(password)}\' WHERE username =\'${username}\';`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) {
@@ -238,6 +249,12 @@ if (cluster.isMaster) {
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
 
+        if (typeof username != "string" || typeof password != "string"){
+            res.send("Parametres invalides");
+            res.end();
+            return;
+           }
+
         if (username && password) {
             connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) {
@@ -276,6 +293,12 @@ if (cluster.isMaster) {
         var highscore = Number(request.body.highscore);
         var qui = request.body.qui;
         var username = request.session.username;
+        if (typeof username != "string" || typeof password != "string"){
+            res.send("Parametres invalides");
+            res.end();
+            return;
+           }
+           
         connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) {
@@ -583,7 +606,6 @@ if (cluster.isMaster) {
     const wss = new WebSocketServer({ port: 8080 })
 
     wss.on('connection', (ws) => {
-        console.log("conncetion")
         ws.on('message', (message) => {
             console.log(`Received message => ${message}`)
         })
