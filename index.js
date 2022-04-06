@@ -140,7 +140,7 @@ if (cluster.isMaster) {
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
 
-        if (typeof username != "string" || typeof password != "string"){
+        if (typeof username != "string"){
             res.send("Parametres invalides");
             res.end();
             return;
@@ -204,7 +204,7 @@ if (cluster.isMaster) {
         let username = request.body.username;
         let password = request.body.password;
 
-        if (typeof username != "string" || typeof password != "string"){
+        if (typeof username != "string"){
             res.send("Paramètre invalide");
             res.end();
             return;
@@ -249,7 +249,7 @@ if (cluster.isMaster) {
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
 
-        if (typeof username != "string" || typeof password != "string"){
+        if (typeof username != "string"){
             res.send("Parametres invalides");
             res.end();
             return;
@@ -293,7 +293,7 @@ if (cluster.isMaster) {
         var highscore = Number(request.body.highscore);
         var qui = request.body.qui;
         var username = request.session.username;
-        if (typeof username != "string" || typeof password != "string"){
+        if (typeof username != "string"){
             res.send("Parametres invalides");
             res.end();
             return;
@@ -368,7 +368,7 @@ if (cluster.isMaster) {
 
     app.get('/gg', function(request, res) {
 
-
+c
         const document = `<!DOCTYPE html>
         <html>
         
