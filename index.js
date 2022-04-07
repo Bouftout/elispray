@@ -27,16 +27,7 @@ const connection = mysql.createConnection({ //connection bdd
 });
 
 var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-app.use(session({
-    name: 'session',
-    secret: 'r4J8cw5CSn',
-    cookie: {
-        resave: true,
-        secure: true,
-        httpOnly: true,
-        expires: expiryDate
-    }
-}));
+
 
 app.use(helmet());
 app.use(cookieParser());
@@ -44,7 +35,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'Page web')));
 app.disable('x-powered-by');
-
+app.use(session({
+    cookieName: 'session',
+    secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
+    duration: 30 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+    httpOnly: true,
+    secure: true,
+    ephemeral: true,
+    resave: true,
+    saveUninitialized: true
+}));
 
 function p(p) {
     return path.join(`${__dirname}/Page web/${p}.html`)
@@ -239,7 +240,7 @@ app.get('/updatepass', function(request, res) {
 
 
 function validate(string) {
-    return String(validator.escape(string));
+    return validator.escape(string);
 }
 
 
@@ -250,7 +251,7 @@ app.post('/auth', function(request, res) {
     let password = hash3(request.body.password);
     console.log("pass" + password);
     console.log("user" + username);
-    if (username && password) {
+    if (username && password || username != undefined || password != undefined) {
         connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
             if (error) {
                 console.log(error);
