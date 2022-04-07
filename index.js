@@ -380,7 +380,7 @@ if (cluster.isMaster) {
 
     app.get('/gg', function(request, res) {
 
-
+        c
         const document = `<!DOCTYPE html>
         <html>
         
