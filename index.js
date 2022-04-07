@@ -7,7 +7,6 @@ const mysql = require('mysql'),
     port = (process.env.PORT || 3000),
     portws = (process.env.PORT || 8080),
     validator = require('validator'),
-    sanitizeHtml = require('sanitize-html'),
     helmet = require("helmet"),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
@@ -38,8 +37,7 @@ app.disable('x-powered-by');
 app.use(session({
     cookieName: 'session',
     secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
+    expiryDate: expiryDate,
     httpOnly: true,
     secure: true,
     ephemeral: true,
@@ -47,14 +45,16 @@ app.use(session({
     saveUninitialized: true
 }));
 
+
+
 function p(p) {
     return path.join(`${__dirname}/Page web/${p}.html`)
 }
 
 // http://localhost:3000/
-app.get('/', function(request, res) {
+app.get('/', function(req, res) {
 
-    if (request.cookies.home == "nohome") {
+    if (req.cookies.home == "nohome") {
         // Render login template
         res.redirect("/login")
 
@@ -66,45 +66,11 @@ app.get('/', function(request, res) {
 
 });
 
-app.get('/play', function(request, res) {
-    // Render login template
-    if (request.session.loggedin) {
-        res.sendFile(p('pagePlay2'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-});
 
 
-app.get('/tetris', function(request, res) {
-    // Render login template
-    if (request.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/tetris.html'));
+app.get('/login', function(req, res) {
 
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-});
-
-app.get('/court', function(request, res) {
-    // Render login template
-    if (request.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/court.html'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-});
-
-
-
-app.get('/login', function(request, res) {
-
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
 
         res.redirect("/play")
 
@@ -115,7 +81,44 @@ app.get('/login', function(request, res) {
 });
 
 
-app.get('/create', function(request, res) {
+app.get('/play', function(req, res) {
+    // Render login template
+    if (req.session.loggedin) {
+        res.sendFile(p('pagePlay2'));
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+
+app.get('/tetris', function(req, res) {
+    // Render login template
+    if (req.session.loggedin) {
+        res.sendFile(path.join(__dirname + '/Page web/tetris.html'));
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+});
+
+app.get('/court', function(req, res) {
+    // Render login template
+    if (req.session.loggedin) {
+        res.sendFile(path.join(__dirname + '/Page web/court.html'));
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+});
+
+
+
+
+app.get('/create', function(req, res) {
     // Render login template
     res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
@@ -129,18 +132,11 @@ function hash3(password) {
 }
 
 
-app.post('/create', function(request, res) {
+app.post('/create', function(req, res) {
 
     // Capture the input fields
-    let username = validate(request.body.username);
-    let anvanthast = request.body.password;
-    let password = hash3(anvanthast);
-
-    if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
-        res.send("Parametres invalides");
-        res.end();
-        return;
-    }
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
     // Ensure the input fields exists and are not empty
     if (username && password) {
         // Execute SQL query that'll select the account from the database based on the specified username and password
@@ -167,11 +163,10 @@ app.post('/create', function(request, res) {
                         console.log(error);
                         return res.redirect("/login");
                     }
-                    // If the account exists
-
+                    // If the account exists, redirect to the login page
                     if (results.protocol41 == true) {
-                        request.session.loggedin = true;
-                        request.session.username = username;
+                        req.session.loggedin = true;
+                        req.session.username = username;
                         // rediction page play.
                         res.redirect('/play');
                     } else {
@@ -195,10 +190,10 @@ app.post('/create', function(request, res) {
 
 });
 
-app.post('/updatepass', function(request, res) {
+app.post('/updatepass', function(req, res) {
 
-    let username = validate(request.body.username);
-    let password = hash3(request.body.password);
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
 
 
 
@@ -226,9 +221,9 @@ app.post('/updatepass', function(request, res) {
 
 });
 
-app.get('/updatepass', function(request, res) {
+app.get('/updatepass', function(req, res) {
 
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/manage.html'));
 
@@ -244,11 +239,10 @@ function validate(string) {
 }
 
 
-// http://localhost:3000/auth
-app.post('/auth', function(request, res) {
+app.post('/auth', function(req, res) {
 
-    let username = validate(request.body.username);
-    let password = hash3(request.body.password);
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
     console.log("pass" + password);
     console.log("user" + username);
     if (username && password || username != undefined || password != undefined) {
@@ -257,26 +251,26 @@ app.post('/auth', function(request, res) {
                 console.log(error);
                 return res.redirect("/login");
             }
-            if (results[0].password == password && results.length > 0 && results[0].username == username) {
-                request.session.loggedin = true;
-                request.session.username = username;
+            if (results.length > 0) {
+                req.session.loggedin = true;
+                req.session.username = username;
                 // rediction page play.
                 res.redirect('/play');
             } else {
-                res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+                res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
             }
             res.end();
         });
     } else {
-        res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br><a href=javascript:history.go(-1)>Retour</a>");
+        res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br>");
         res.end();
     }
 });
 
 
-app.get('/snake', function(request, res) {
+app.get('/snake', function(req, res) {
 
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/Page web/snake.html'));
     } else {
         // Pas connectée.
@@ -284,11 +278,11 @@ app.get('/snake', function(request, res) {
     }
 });
 
-app.post('/highscore', function(request, res) {
+app.post('/highscore', function(req, res) {
     // Capture the input fields
-    var highscore = Number(request.body.highscore);
-    var qui = validate(request.body.qui);
-    var username = validate(request.session.username);
+    var highscore = Number(req.body.highscore);
+    var qui = validate(req.body.qui);
+    var username = validate(req.session.username);
 
 
     connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
@@ -329,9 +323,9 @@ var highscoretableaucomplet = {
 
 var count = 0;
 
-app.post('/gg', function(request, res) {
+app.post('/gg', function(req, res) {
 
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
 
         connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
             // If there is an issue with the query, output the error
@@ -358,7 +352,7 @@ app.post('/gg', function(request, res) {
 
 });
 
-app.get('/gg', function(request, res) {
+app.get('/gg', function(req, res) {
 
     c
     const document = `<!DOCTYPE html>
@@ -472,8 +466,8 @@ io.on("connection", (socket) => {
 // Render chat
 app.set('view engine', 'ejs')
 
-app.get('/chat', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/chat', function(req, res) {
+    if (req.session.loggedin) {
 
         res.render('chat');
 
@@ -484,11 +478,11 @@ app.get('/chat', function(request, res) {
 
 });
 
-app.get('/username', function(request, res) {
+app.get('/username', function(req, res) {
 
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
 
-        let usernames = request.session.username;
+        let usernames = req.session.username;
         res.json(`{"user":"${usernames}"}`)
 
     } else {
@@ -498,8 +492,8 @@ app.get('/username', function(request, res) {
 
 });
 
-app.get('/game', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/game', function(req, res) {
+    if (req.session.loggedin) {
 
         res.render('game')
 
@@ -510,8 +504,8 @@ app.get('/game', function(request, res) {
 
 });
 
-app.get('/td', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/td', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
 
@@ -522,8 +516,8 @@ app.get('/td', function(request, res) {
 
 });
 
-app.get('/snake2', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/snake2', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
 
@@ -534,8 +528,8 @@ app.get('/snake2', function(request, res) {
 
 });
 
-app.get('/brick', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/brick', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/brick/index.html'));
 
@@ -546,8 +540,8 @@ app.get('/brick', function(request, res) {
 
 });
 
-app.get('/undertale', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/undertale', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
 
@@ -558,8 +552,8 @@ app.get('/undertale', function(request, res) {
 
 });
 
-app.get('/pong', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/pong', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/pong/index.html'));
 
@@ -573,8 +567,8 @@ app.get('/pong', function(request, res) {
 
 //WebSocket
 
-app.get('/ws', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/ws', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/ws.html'));
 
@@ -598,11 +592,11 @@ wss.on('connection', (ws) => {
 
 
 //Truc d'email
-app.post('/envoie', function(request, res) {
+app.post('/envoie', function(req, res) {
 
-    let info = request.session.info;
+    let info = req.session.info;
 
-    if (request.session.loggedin) {
+    if (req.session.loggedin) {
 
 
     } else {
@@ -612,8 +606,8 @@ app.post('/envoie', function(request, res) {
 
 });
 
-app.get('/envoie', function(request, res) {
-    if (request.session.loggedin) {
+app.get('/envoie', function(req, res) {
+    if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/envoie.html'));
 
