@@ -50,6 +50,7 @@ if (cluster.isMaster) {
         secret: 'r4J8cw5CSn',
         keys: ['key1', 'key2'],
         cookie: {
+            resave: true,
             secure: true,
             httpOnly: true,
             domain: 'https://elisplay.herokuapp.com/',
