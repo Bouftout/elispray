@@ -8,9 +8,14 @@ const mysql = require('mysql'),
     portws = (process.env.PORT || 8080),
     validator = require('validator'),
     sanitizeHtml = require('sanitize-html'),
+    helmet = require("helmet"),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
     app = express();
+
+
+
+
 
 // For Master process
 if (cluster.isMaster) {
@@ -59,7 +64,7 @@ if (cluster.isMaster) {
         }
     }));
 
-
+    app.use(helmet());
     app.use(cookieParser());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
