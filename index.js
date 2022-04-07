@@ -46,7 +46,8 @@ if (cluster.isMaster) {
 
     var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     app.use(session({
-        name: 'r4J8cw5CSn',
+        name: 'session',
+        secret: 'r4J8cw5CSn',
         keys: ['key1', 'key2'],
         cookie: {
             secure: true,
