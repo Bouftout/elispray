@@ -73,7 +73,7 @@ if (cluster.isMaster) {
 
 
     function p(p) {
-        return sanitizeHtml(path.join(`${__dirname}/Page web/${p}.html`))
+        return path.join(`${__dirname}/Page web/${p}.html`)
     }
 
     // http://localhost:3000/
