@@ -248,7 +248,8 @@ app.post('/auth', function(request, res) {
 
     let username = validate(request.body.username);
     let password = hash3(request.body.password);
-
+    console.log("pass" + password);
+    console.log("user" + username);
     if (username && password) {
         connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
             if (error) {
