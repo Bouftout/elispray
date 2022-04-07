@@ -2,7 +2,6 @@ const mysql = require('mysql'),
     express = require('express'),
     session = require('express-session'),
     path = require('path'),
-    cluster = require('cluster'),
     cookieParser = require('cookie-parser'),
     port = (process.env.PORT || 3000),
     portws = (process.env.PORT || 8080),
@@ -25,10 +24,9 @@ const connection = mysql.createConnection({ //connection bdd
     database: 'bellone_login'
 });
 
-var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
-
-
-app.use(helmet());
+console.log("Date maintenant" + new Date(Date.now()))
+console.log(new Date(Date.now() + (2629800000)));
+//app.use(helmet());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -37,7 +35,7 @@ app.disable('x-powered-by');
 app.use(session({
     cookieName: 'session',
     secret: 'eg[isfd-8yF9-7w2315df{}+Ijsli;;to8',
-    expiryDate: expiryDate,
+    expires: new Date(Date.now() + (30 * 86400 * 1000)),
     httpOnly: true,
     secure: true,
     ephemeral: true,
