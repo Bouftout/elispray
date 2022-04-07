@@ -6,6 +6,8 @@ const mysql = require('mysql'),
     cookieParser = require('cookie-parser'),
     port = (process.env.PORT || 3000),
     portws = (process.env.PORT || 8080),
+    validator = require('validator'),
+    sanitizeHtml = require('sanitize-html'),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
     app = express();
@@ -42,16 +44,30 @@ if (cluster.isMaster) {
         database: 'bellone_login'
     });
 
+    var expiryDate = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
     app.use(session({
-        secret: 'secret',
-        resave: true,
-        saveUninitialized: true
+        name: 'r4J8cw5CSn',
+        keys: ['key1', 'key2'],
+        cookie: {
+            secure: true,
+            httpOnly: true,
+            domain: 'https://elisplay.herokuapp.com/',
+            path: '/',
+            expires: expiryDate
+        }
     }));
+
 
     app.use(cookieParser());
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static(path.join(__dirname, 'Page web')));
+    app.disable('x-powered-by');
+
+
+    function p(p) {
+        return sanitizeHtml(path.join(`${__dirname}/Page web/${p}.html`))
+    }
 
     // http://localhost:3000/
     app.get('/', function(request, res) {
@@ -62,7 +78,7 @@ if (cluster.isMaster) {
 
         } else {
             res.cookie(`home`, `nohome`);
-            res.sendFile(path.join(__dirname + '/Page web/Elisplay.html'));
+            res.sendFile(p('Elisplay'));
         }
 
 
@@ -71,7 +87,7 @@ if (cluster.isMaster) {
     app.get('/play', function(request, res) {
         // Render login template
         if (request.session.loggedin) {
-            res.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
+            res.sendFile(p('pagePlay2'));
 
         } else {
             // Pas connectée.
@@ -136,7 +152,7 @@ if (cluster.isMaster) {
     app.post('/create', function(request, res) {
 
         // Capture the input fields
-        let username = request.body.username;
+        let username = validate(request.body.username);
         let anvanthast = request.body.password;
         let password = hash3(anvanthast);
 
@@ -201,8 +217,8 @@ if (cluster.isMaster) {
 
     app.post('/updatepass', function(request, res) {
 
-        let username = request.body.username;
-        let password = request.body.password;
+        let username = validate(request.body.username);
+        let password = hash3(request.body.password);
 
 
 
@@ -212,7 +228,7 @@ if (cluster.isMaster) {
             return;
         }
 
-        connection.query(`UPDATE accounts SET password=\'${hash3(password)}\' WHERE username =\'${username}\';`, function(error, results, fields) {
+        connection.query(`UPDATE accounts SET password=\'${password}\' WHERE username =\'${username}\';`, function(error, results, fields) {
             // If there is an issue with the query, output the error
             if (error) {
                 console.log(error);
@@ -243,19 +259,16 @@ if (cluster.isMaster) {
     });
 
 
+    function validate(string) {
+        return String(validator.escape(string));
+    }
+
 
     // http://localhost:3000/auth
     app.post('/auth', function(request, res) {
 
-        let username = request.body.username;
-        let anvanthast = request.body.password;
-        let password = hash3(anvanthast);
-
-        if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
-            res.send("Parametres invalides");
-            res.end();
-            return;
-        }
+        let username = validate(request.body.username);
+        let password = hash3(request.body.password);
 
         if (username && password) {
             connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
@@ -263,7 +276,8 @@ if (cluster.isMaster) {
                     console.log(error);
                     return res.redirect("/login");
                 }
-                if (results.length > 0) {
+                console.log(results[0].password)
+                if (results[0].password == password && results.length > 0) {
                     request.session.loggedin = true;
                     request.session.username = username;
                     // rediction page play.
@@ -293,13 +307,9 @@ if (cluster.isMaster) {
     app.post('/highscore', function(request, res) {
         // Capture the input fields
         var highscore = Number(request.body.highscore);
-        var qui = request.body.qui;
-        var username = request.session.username;
-        if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
-            res.send("Parametres invalides");
-            res.end();
-            return;
-        }
+        var qui = validate(request.body.qui);
+        var username = validate(request.session.username);
+
 
         connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
             // If there is an issue with the query, output the error
@@ -426,10 +436,7 @@ if (cluster.isMaster) {
     });
 
     const io = require("socket.io")(server)
-
-    const { convert } = require('html-to-text');
-
-    // server-side
+        // server-side
     io.on("connection", (socket) => {
         // console.log("Connection:" + socket.id); // x8WIv7-mJelg7on_ALbx
 
@@ -439,12 +446,7 @@ if (cluster.isMaster) {
         });
 
         socket.on("msg", (username, msg) => {
-            const textmsg = convert(msg, {
-                wordwrap: 130
-            });
-
-            io.to("chat").emit("helloserv", username, textmsg);
-
+            io.to("chat").emit("helloserv", username, validate(msg));
         });
 
         socket.on("typingserv", (arg, username) => {
