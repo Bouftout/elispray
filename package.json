@@ -33,6 +33,7 @@
         "express": "^4.17.3",
         "express-session": "^1.17.2",
         "flv.js": "^1.6.2",
+        "helmet": "^5.0.2",
         "html-to-text": "^8.1.0",
         "http": "^0.0.1-security",
         "mysql": "^2.18.1",
