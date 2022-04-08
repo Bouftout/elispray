@@ -24,9 +24,19 @@ const connection = mysql.createConnection({ //connection bdd
     database: 'bellone_login'
 });
 
-console.log("Date maintenant" + new Date(Date.now()))
-console.log(new Date(Date.now() + (2629800000)));
-//app.use(helmet());
+
+
+app.use(
+    helmet.contentSecurityPolicy({
+        useDefaults: false,
+        directives: {
+            defaultSrc: ["'self'"],
+            scriptSrc: ["'self'", "https://elisplay.herokuapp.com/"],
+            objectSrc: ["'none'"],
+            upgradeInsecureRequests: [],
+        },
+    })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -267,7 +277,6 @@ app.post('/auth', function(req, res) {
 
 
 app.get('/snake', function(req, res) {
-
     if (req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/Page web/snake.html'));
     } else {
@@ -275,6 +284,7 @@ app.get('/snake', function(req, res) {
         res.redirect("/login")
     }
 });
+
 
 app.post('/highscore', function(req, res) {
     // Capture the input fields
