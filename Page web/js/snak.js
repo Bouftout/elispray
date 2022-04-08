@@ -57,7 +57,6 @@ var RIGHT = 3;
 var game = new Phaser.Game(config);
 
 function preload() {
-    this.load.setBaseURL('https://elisplay.herokuapp.com/');
     this.load.image("food", "assets/games/snake/food.png");
     this.load.image("body", "assets/games/snake/body.png");
 }

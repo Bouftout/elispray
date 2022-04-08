@@ -26,17 +26,7 @@ const connection = mysql.createConnection({ //connection bdd
 
 
 
-app.use(
-    helmet.contentSecurityPolicy({
-        useDefaults: false,
-        directives: {
-            defaultSrc: ["'self'"],
-            scriptSrc: ["'self'", "https://elisplay.herokuapp.com/"],
-            objectSrc: ["'none'"],
-            upgradeInsecureRequests: [],
-        },
-    })
-);
+app.use(helmet.xssFilter());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
