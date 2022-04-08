@@ -26,7 +26,6 @@ const connection = mysql.createConnection({ //connection bdd
 
 
 
-app.use(helmet.xssFilter());
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
