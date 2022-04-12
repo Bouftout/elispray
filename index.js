@@ -620,9 +620,21 @@ app.get('/world', function(req, res) {
 
 });
 
+app.get('/tour', function(req, res) {
+    if (req.session.loggedin) {
+
+        res.sendFile(path.join(__dirname + '/Page web/tourpartour/index.html'));
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+// Truc de jeu
 app.get('/jeuto', function(req, res) {
 
     res.redirect("/https://gamejolt.com/@ToniPortal/games")
-
 
 });
