@@ -352,7 +352,6 @@ app.post('/gg', function(req, res) {
 
 app.get('/gg', function(req, res) {
 
-    c
     const document = `<!DOCTYPE html>
         <html>
         
@@ -377,13 +376,6 @@ app.get('/gg', function(req, res) {
                     <th>Flappy</th>
                 </tr>
                 <tr>
-                    <td>Name</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
-                    <td>0</td>
                 </tr>
             </table>
         </body>
@@ -613,5 +605,24 @@ app.get('/envoie', function(req, res) {
         // Pas connectée.
         res.redirect("/login")
     }
+
+});
+
+app.get('/world', function(req, res) {
+    if (req.session.loggedin) {
+
+        res.sendFile(path.join(__dirname + '/Page web/world/index.html'));
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+app.get('/jeuto', function(req, res) {
+
+    res.redirect("/https://gamejolt.com/@ToniPortal/games")
+
 
 });
