@@ -1,7 +1,7 @@
 window.addEventListener('load', (event) => {
     console.log('page is fully loaded');
     highscorestart()
-  });
+});
 
 function highscorestart() {
     if (!localStorage.jsSnakeHighScore) {
@@ -71,6 +71,11 @@ function preload() {
 var retientgrow = [];
 
 function create() {
+    this.input.once('pointerdown', function () {
+
+        this.scene.resume();
+
+    }, this);
 
     var Food = new Phaser.Class({
         Extends: Phaser.GameObjects.Image,
@@ -87,7 +92,7 @@ function create() {
             scene.children.add(this);
         },
 
-        eat: function() {
+        eat: function () {
             this.total++;
         },
     });
@@ -113,42 +118,42 @@ function create() {
             this.direction = RIGHT;
         },
 
-        update: function(time) {
+        update: function (time) {
             if (time >= this.moveTime) {
                 return this.move(time);
             }
         },
 
-        faceLeft: function() {
+        faceLeft: function () {
             if (this.direction === UP || this.direction === DOWN) {
                 this.heading = LEFT;
             }
         },
 
-        faceRight: function() {
+        faceRight: function () {
             if (this.direction === UP || this.direction === DOWN) {
                 this.heading = RIGHT;
             }
         },
 
-        faceUp: function() {
+        faceUp: function () {
             if (this.direction === LEFT || this.direction === RIGHT) {
                 this.heading = UP;
             }
         },
 
-        faceDown: function() {
+        faceDown: function () {
             if (this.direction === LEFT || this.direction === RIGHT) {
                 this.heading = DOWN;
             }
         },
-        reset: function() {
+        reset: function () {
             this.heading = "RESET";
             food.total = 0;
             this.speed = 100;
         },
 
-        move: function(time) {
+        move: function (time) {
             switch (this.heading) {
                 case LEFT:
                     if (
@@ -189,10 +194,10 @@ function create() {
 
                 case UP:
                     if ((this.headPosition.y = Phaser.Math.Wrap(
-                            this.headPosition.y,
-                            0,
-                            30
-                        )) == 0) {
+                        this.headPosition.y,
+                        0,
+                        30
+                    )) == 0) {
                         dead()
                     } else {
                         this.headPosition.y = Phaser.Math.Wrap(
@@ -205,10 +210,10 @@ function create() {
 
                 case DOWN:
                     if ((this.headPosition.y = Phaser.Math.Wrap(
-                            this.headPosition.y,
-                            0,
-                            30
-                        )) == 29) {
+                        this.headPosition.y,
+                        0,
+                        30
+                    )) == 29) {
                         dead()
                     } else {
                         this.headPosition.y = Phaser.Math.Wrap(
@@ -263,13 +268,13 @@ function create() {
             }
         },
 
-        grow: function() {
+        grow: function () {
             var newPart = this.body.create(this.tail.x, this.tail.y, "body");
             retientgrow.push(newPart);
             newPart.setOrigin(0);
         },
 
-        collideWithFood: function(food) {
+        collideWithFood: function (food) {
             if (this.head.x === food.x && this.head.y === food.y) {
                 this.grow();
 
@@ -292,8 +297,8 @@ function create() {
             }
         },
 
-        updateGrid: function(grid) {
-            this.body.children.each(function(segment) {
+        updateGrid: function (grid) {
+            this.body.children.each(function (segment) {
                 var bx = segment.x / 16;
                 var by = segment.y / 16;
 
@@ -311,6 +316,7 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
 }
 
+
 function update(time, delta) {
     if (!snake.alive) {
         return;
@@ -326,8 +332,13 @@ function update(time, delta) {
     }
 
     if (cursors.space.isDown) {
-        this.scene.pause();
+
+        setInterval(function () {
+            snake.reset();
+        }, 200);
+
     }
+
 
     if (snake.update(time)) {
         if (snake.collideWithFood(food)) {
@@ -390,8 +401,4 @@ function dead() {
         }, 500);
     }
 
-}
-
-function pause(){
-  
 }
