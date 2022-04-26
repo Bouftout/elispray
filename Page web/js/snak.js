@@ -326,7 +326,7 @@ function update(time, delta) {
     }
 
     if (cursors.space.isDown) {
-        dead()
+        this.scene.pause();
     }
 
     if (snake.update(time)) {
@@ -390,4 +390,8 @@ function dead() {
         }, 500);
     }
 
+}
+
+function pause(){
+  
 }
