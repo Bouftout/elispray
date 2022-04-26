@@ -26,7 +26,15 @@ const connection = mysql.createConnection({ //connection bdd
 
 
 //SECURITER QUI BLOQUE TOUT:
-//app.use(helmet());
+/*
+app.use(
+    helmet.contentSecurityPolicy({
+      directives: {
+        "style-src": null,
+        "img-src": ["'self'", "data: blob:"],
+      },
+    })
+  );*/
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
