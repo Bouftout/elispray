@@ -8,7 +8,7 @@ function highscorestart() {
         localStorage.setItem("jsSnakeHighScore", 0);
     }
 
-    document.querySelector(".best").textContent = "Best Highscore : " + localStorage.jsSnakeHighScore
+    document.querySelector(".best").textContent = "Highscore : " + localStorage.jsSnakeHighScore
 
 }
 
@@ -281,10 +281,10 @@ function create() {
                 food.eat();
 
                 //Highscore
-                document.querySelector(".high").textContent = "Highscore : " + food.total;
+                document.querySelector(".high").textContent = "Score : " + food.total;
                 if (localStorage.jsSnakeHighScore < food.total) {
                     localStorage.setItem("jsSnakeHighScore", food.total);
-                    document.querySelector(".best").textContent = "Best Highscore : " + localStorage.jsSnakeHighScore;
+                    document.querySelector(".best").textContent = "Highscore : " + localStorage.jsSnakeHighScore;
                     submit();
                 }
                 if (this.speed > 15 && food.total % 5 === 0) {
@@ -331,13 +331,7 @@ function update(time, delta) {
         snake.faceDown();
     }
 
-    if (cursors.space.isDown) {
 
-        setInterval(function () {
-            snake.reset();
-        }, 200);
-
-    }
 
 
     if (snake.update(time)) {
@@ -385,13 +379,18 @@ function repositionFood() {
         return false;
     }
 }
+
+var mort = 0;
+
 var onedead = false;
 
 function dead() {
 
     if (onedead == false) {
         onedead = true;
-        document.querySelector(".high").textContent = "Highscore : 0"
+        mort++
+        document.querySelector(".high").textContent = "Score : 0"
+        document.querySelector(".nbmort").textContent = "Mort : " + mort;
         repositionFood()
         snake.reset();
 
