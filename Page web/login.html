@@ -9,17 +9,22 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
     <!-- include the stylesheet file -->
     <link href="./css/stylelogin.css" rel="stylesheet" type="text/css">
+    <script>
+    </script>
 </head>
 
 <body>
     <div class="login">
         <h1>Login</h1>
         <form action="/auth" method="post">
+            <label for="email">
+                <i class="fas fa-email"></i>
+            </label>
+            <input type="text" name="email" placeholder="Email" id="email">
             <label for="username">
-					<!-- font awesome icon -->
 					<i class="fas fa-user"></i>
 				</label>
-            <input type="text" name="username" placeholder="Username" id="username" required>
+            <input type="text" name="username" placeholder="Username" id="username">
             <label for="password">
 					<i class="fas fa-lock"></i>
 				</label>

@@ -130,70 +130,127 @@ function hash3(password) {
 }
 
 
-app.post('/create', function(req, res) {
-
-    // Capture the input fields
-    let username = validate(req.body.username);
-    let password = hash3(req.body.password);
-    // Ensure the input fields exists and are not empty
-    if (username && password) {
-        // Execute SQL query that'll select the account from the database based on the specified username and password
-
-        //INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
-
-        connection.query('SELECT username FROM accounts', function(error, resultaccount, fields) {
-            // If there is an issue with the query, output the error
-            if (error) {
-                console.log(error);
-                return res.redirect("/login");
-            }
-            var verifusername = false;
-            for (i = 0; i < Object.keys(resultaccount).length; i++) {
-                if (resultaccount[i].username == username) {
-                    verifusername = true;
-                }
-            }
-
-            if (verifusername == false) {
-                connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
-                    // If there is an issue with the query, output the error
-                    if (error) {
-                        console.log(error);
-                        return res.redirect("/login");
-                    }
-                    // If the account exists, redirect to the login page
-                    if (results.protocol41 == true) {
-                        req.session.loggedin = true;
-                        req.session.username = username;
-                        // rediction page play.
-                        res.redirect('/play');
-                    } else {
-                        res.redirect("/create")
-                    }
-                    res.end();
-                });
+app.get('/confirm/:email/:code/', (req, res) => {
+    /*
+    connection.query(`SELECT * FROM users WHERE email = '${req.params.email}'`, (err, rows) => {
+        if (err) throw err;
+        if (rows.length > 0) {
+            if (rows[0].code == req.params.code) {
+                connection.query(`UPDATE users SET confirm = 1 WHERE email = '${req.params.email}'`, (err, rows) => {
+                    if (err) throw err;
+                    res.redirect("/login")
+                })
             } else {
-                res.send('Il a déjà un utilisateur avec ce nom là !');
-                res.end();
+                res.redirect("/login")
             }
-        });
+        } else {
+            res.redirect("/login")
+        }
+    })*/
+
+    let s = 0
+
+    for (var i = 0; i < list.length; i++) {
+        if (list[i].code == req.params.code && list[i].email == req.params.email) {
+            // we found it
+
+            if (s == 0) {
+                connection.query(`INSERT INTO \`accounts\` (\`email\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${req.params.email}', '${hash3(list[i].pass)}', 0,0,0,0,0,0,0);`, (err, rows) => {
+                    if (err) throw err;
+                    res.redirect("/login")
+                })
+                list.pop();
+            }
+            s++
+        }
+    }
 
 
-
-
-    } else {
-        res.send('Veuillez entrer un Username et un Password!');
+    if (s == 0) {
+        res.send(`Email: ${req.params.email}\nCode: ${req.params.code}\n`);
         res.end();
     }
 
+
+})
+
+let list = [];
+let myJson;
+
+app.post('/create', function(req, res) {
+
+    if (req.body.username == " " || !req.body.username) {
+        let code = "1" //makeid(5);
+        let email = validate(req.body.email);
+        emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le lien suivant : http://localhost:3000/confirm/${email}/${code}`);
+        myJson = { email: `${email}`, code: `${code}`, pass: `${req.body.password}` };
+        list.push(myJson);
+
+        console.log(list)
+        res.send("Veuillez vérifier votre email");
+
+    } else if (req.body.email == " " || !req.body.email) {
+
+        // Capture the input fields
+        let username = validate(req.body.username);
+        let password = hash3(req.body.password);
+        // Ensure the input fields exists and are not empty
+        if (username && password) {
+            // Execute SQL query that'll select the account from the database based on the specified username and password
+
+            //INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
+
+            connection.query('SELECT username FROM accounts', function(error, resultaccount, fields) {
+                // If there is an issue with the query, output the error
+                if (error) {
+                    console.log(error);
+                    return res.redirect("/login");
+                }
+                var verifusername = false;
+                for (i = 0; i < Object.keys(resultaccount).length; i++) {
+                    if (resultaccount[i].username == username) {
+                        verifusername = true;
+                    }
+                }
+
+                if (verifusername == false) {
+                    connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
+                        // If there is an issue with the query, output the error
+                        if (error) {
+                            console.log(error);
+                            return res.redirect("/login");
+                        }
+                        // If the account exists, redirect to the login page
+                        if (results.protocol41 == true) {
+                            req.session.loggedin = true;
+                            req.session.username = username;
+                            // rediction page play.
+                            res.redirect('/play');
+                        } else {
+                            res.redirect("/create")
+                        }
+                        res.end();
+                    });
+                } else {
+                    res.send('Il a déjà un utilisateur avec ce nom là !');
+                    res.end();
+                }
+            });
+
+
+
+
+        } else {
+            res.send('Veuillez entrer un Username et un Password!');
+            res.end();
+        }
+    }
 });
 
 app.post('/updatepass', function(req, res) {
 
     let username = validate(req.body.username);
     let password = hash3(req.body.password);
-
-
 
     if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
         res.send("Paramètre invalide");
@@ -231,39 +288,111 @@ app.get('/updatepass', function(req, res) {
     }
 });
 
+function makeid(length) {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+}
 
 function validate(string) {
     return validator.escape(string);
 }
 
-
 app.post('/auth', function(req, res) {
-
-    let username = validate(req.body.username);
     let password = hash3(req.body.password);
-    console.log("pass" + password);
-    console.log("user" + username);
-    if (username && password || username != undefined || password != undefined) {
-        connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
-            if (error) {
-                console.log(error);
-                return res.redirect("/login");
-            }
-            if (results.length > 0) {
-                req.session.loggedin = true;
-                req.session.username = username;
-                // rediction page play.
-                res.redirect('/play');
-            } else {
-                res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
-            }
+
+    if (req.body.username == " " || !req.body.username) {
+
+        let email = validate(req.body.email);
+
+        console.log("pass " + password);
+        console.log("email " + email);
+
+        if (email && password || email != undefined || password != undefined) {
+            connection.query(`SELECT * FROM accounts WHERE email = '${email}' AND password = '${password}'`, function(error, results, fields) {
+                if (error) {
+                    console.log(error);
+                    return res.redirect("/login");
+                }
+                if (results.length > 0) {
+                    req.session.loggedin = true;
+                    req.session.username = email;
+                    // rediction page play.
+                    res.redirect('/play');
+                } else {
+                    res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
+                }
+                res.end();
+            });
+        } else {
+            res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br>");
             res.end();
-        });
-    } else {
-        res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br>");
-        res.end();
+        }
+
+    } else if (req.body.email == " " || !req.body.email) {
+
+
+        let username = validate(req.body.username);
+
+        console.log("pass " + password);
+        console.log("user " + username);
+
+        if (username && password || username != undefined || password != undefined) {
+            connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
+                if (error) {
+                    console.log(error);
+                    return res.redirect("/login");
+                }
+                if (results.length > 0) {
+                    req.session.loggedin = true;
+                    req.session.username = username;
+                    // rediction page play.
+                    res.redirect('/play');
+                } else {
+                    res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
+                }
+                res.end();
+            });
+        } else {
+            res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br>");
+            res.end();
+        }
+
     }
+
 });
+
+
+
+var nodemailer = require('nodemailer');
+
+
+async function emailfunc(email, sujet, msg) {
+
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'contactelisplay@gmail.com',
+            pass: 'rc4mv4isCJ98@RstCE!9'
+        }
+    });
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: 'contactelisplay@gmail.com', // sender address
+        to: email, // list of receivers
+        subject: sujet, // Subject line
+        html: `Email: ${email}<br>${msg}`, // plain text body
+    });
+
+    console.log("Message sent: %s", info.messageId);
+    // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+}
 
 
 app.get('/snake', function(req, res) {
@@ -637,4 +766,69 @@ app.get('/jeuto', function(req, res) {
 
     res.redirect("/https://gamejolt.com/@ToniPortal/games")
 
+});
+
+app.get('/404', function(req, res, next) {
+    // trigger a 404 since no other middleware
+    // will match /404 after this one, and we're not
+    // responding here
+    next();
+});
+
+app.get('/403', function(req, res, next) {
+    // trigger a 403 error
+    var err = new Error('not allowed!');
+    err.status = 403;
+    next(err);
+});
+
+app.get('/500', function(req, res, next) {
+    // trigger a generic (500) error
+    next(new Error('keyboard cat!'));
+});
+
+// Error handlers
+
+// Since this is the last non-error-handling
+// middleware use()d, we assume 404, as nothing else
+// responded.
+
+// $ curl http://localhost:3000/notfound
+// $ curl http://localhost:3000/notfound -H "Accept: application/json"
+// $ curl http://localhost:3000/notfound -H "Accept: text/plain"
+
+app.use(function(req, res, next) {
+    res.status(404);
+
+    res.format({
+        html: function() {
+            res.render('404', { url: req.url })
+        },
+        json: function() {
+            res.json({ error: 'Not found' })
+        },
+        default: function() {
+            res.type('txt').send('Not found')
+        }
+    })
+});
+
+// error-handling middleware, take the same form
+// as regular middleware, however they require an
+// arity of 4, aka the signature (err, req, res, next).
+// when connect has an error, it will invoke ONLY error-handling
+// middleware.
+
+// If we were to next() here any remaining non-error-handling
+// middleware would then be executed, or if we next(err) to
+// continue passing the error, only error-handling middleware
+// would remain being executed, however here
+// we simply respond with an error page.
+
+app.use(function(err, req, res, next) {
+    // we may use properties of the error object
+    // here and next(err) appropriately, or if
+    // we possibly recovered from the error, simply next().
+    res.status(err.status || 500);
+    res.render('500', { error: err });
 });

@@ -1,3 +1,29 @@
+var vie = 3;
+var time = 0;
+var lvl = 1;
+var enregistretext = "";
+
+function updatetext(text) {
+    time++;
+    if (!text || text == "") {
+
+    } else {
+        enregistretext = text;
+
+    }
+    enregistretext.setText([
+        `Vie: ${vie}`,
+        `Timer: ${time}`,
+        `Level: ${lvl}`
+    ]);
+}
+window.onload = start;
+var interval = "";
+
+function start() {
+    interval = setInterval(function() { updatetext() }, 1000);
+}
+
 var Breakout = new Phaser.Class({
 
     Extends: Phaser.Scene,
@@ -15,10 +41,23 @@ var Breakout = new Phaser.Class({
     },
 
     preload: function() {
+        var text2 = this.add.text(685, 570, "Klass bryke", { fill: '#ffffff' });
+        text2.setShadow(2, 2, 'rgba(0,0,0,0.5)', 0);
+
+
         this.load.atlas('assets', '/brick/breakout.png', '/brick/breakout.json');
+
+        var text = this.add.text(10, 10, '', { font: '16px Courier', fill: '#00ff00' });
+        text.setText('Loading...');
+
+        updatetext(text);
+
+
+
     },
 
     create: function() {
+
         //  Enable world bounds, but disable the floor
         this.physics.world.setBoundsCollision(true, true, true, false);
 
@@ -69,6 +108,7 @@ var Breakout = new Phaser.Class({
     },
 
     hitBrick: function(ball, brick) {
+
         brick.disableBody(true, true);
 
         if (this.bricks.countActive() === 0) {
@@ -77,9 +117,26 @@ var Breakout = new Phaser.Class({
     },
 
     resetBall: function() {
-        this.ball.setVelocity(0);
-        this.ball.setPosition(this.paddle.x, 500);
-        this.ball.setData('onPaddle', true);
+        vie--;
+        updatetext()
+        if (vie == 0) {
+            clearInterval(interval);
+
+            this.registry.destroy(); // destroy registry
+            this.events.off(); // disable all active events
+            this.scene.restart(); // restart current scene
+
+            vie = 3;
+            time = 0;
+            alert("Game Over");
+
+            start();
+        } else {
+            this.ball.setVelocity(0);
+            this.ball.setPosition(this.paddle.x, 500);
+            this.ball.setData('onPaddle', true);
+        }
+
     },
 
     resetLevel: function() {
