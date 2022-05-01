@@ -4,18 +4,22 @@
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src *;
+   img-src * 'self' data: blob:; script-src 'self' 'unsafe-inline' 'unsafe-eval' *;
+   style-src  'self' 'unsafe-inline' *">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="./js/phaser.js "></script>
     <script src="./js/snak.js "></script>
+    
 </head>
 
 
-<body onload="highscorestart() " id="bodyid ">
-    <h2 id="besthighscore ">Best Highscore : 0</h2>
-    <h3 id="highscore ">Highscore : 0</h3>
-    <h2 id="nbmort ">Nb de mort : 0</h2>
-    <button onclick="submit() ">Force Submit</button>
-    <p id="info ">.</p>
+<body id="bodyid ">
+    <h2 class="best" id="besthighscore">Highscore : 0</h2>
+    <h3 class="high" id="highscore ">Score : 0</h3>
+    <h2 class="nbmort" id="nbmort ">Mort : 0</h2>
+    <button onclick="submit() ">Forcer l'envoi</button>
+    <p class="info" id="info ">.</p>
 
 </body>
 

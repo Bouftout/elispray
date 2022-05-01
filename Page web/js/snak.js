@@ -1,8 +1,15 @@
+window.addEventListener('load', (event) => {
+    console.log('page is fully loaded');
+    highscorestart()
+});
+
 function highscorestart() {
     if (!localStorage.jsSnakeHighScore) {
         localStorage.setItem("jsSnakeHighScore", 0);
     }
-    // document.getElementById("besthighscore").innerHTML = "Best Highscore : " + localStorage.jsSnakeHighScore
+
+    document.querySelector(".best").textContent = "Highscore : " + localStorage.jsSnakeHighScore
+
 }
 
 function submit() {
@@ -22,9 +29,9 @@ function submit() {
         }
     })
 
-    //document.getElementById("info").innerHTML = "Submit data BDD";
+    document.querySelector(".info").textContent = "Submit data BDD"
     setTimeout(() => {
-        //document.getElementById("info").innerHTML = "."
+        document.querySelector(".info").textContent = "."
     }, 3000);
 }
 
@@ -280,10 +287,10 @@ function create() {
                 food.eat();
 
                 //Highscore
-                // document.getElementById("highscore").innerHTML = "Highscore : " + food.total;
+                document.querySelector(".high").textContent = "Score : " + food.total;
                 if (localStorage.jsSnakeHighScore < food.total) {
                     localStorage.setItem("jsSnakeHighScore", food.total);
-                    //document.getElementById("besthighscore").innerHTML = "Best Highscore : " + localStorage.jsSnakeHighScore;
+                    document.querySelector(".best").textContent = "Highscore : " + localStorage.jsSnakeHighScore;
                     submit();
                 }
                 if (this.speed > 15 && food.total % 5 === 0) {
@@ -315,6 +322,7 @@ function create() {
     cursors = this.input.keyboard.createCursorKeys();
 }
 
+
 function update(time, delta) {
     if (!snake.alive) {
         return;
@@ -329,9 +337,8 @@ function update(time, delta) {
         snake.faceDown();
     }
 
-    if (cursors.space.isDown) {
-        dead()
-    }
+
+
 
     if (snake.update(time)) {
         if (snake.collideWithFood(food)) {
@@ -378,19 +385,24 @@ function repositionFood() {
         return false;
     }
 }
+
+var mort = 0;
+
 var onedead = false;
 
 function dead() {
 
     if (onedead == false) {
         onedead = true;
-        //document.getElementById("highscore").innerHTML = "Highscore : 0"
+        mort++
+        document.querySelector(".high").textContent = "Score : 0"
+        document.querySelector(".nbmort").textContent = "Mort : " + mort;
         repositionFood()
         snake.reset();
 
-        //document.getElementById("info").innerHTML = "Vous êtes mort !"
+        document.querySelector(".info").textContent = "Vous êtes mort !"
         setTimeout(() => {
-            //document.getElementById("info").innerHTML = "."
+            document.querySelector(".info").textContent = "."
         }, 500);
     }
 

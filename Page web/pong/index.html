@@ -400,6 +400,11 @@ Your browser does not support the
             var Pong = Object.assign({}, Game);
             Pong.initialize();
         }
+
+        window.addEventListener('load', (event) => {
+    console.log('page is fully loaded');
+    onstart()
+  });
     </script>
 
     <style>
@@ -409,7 +414,7 @@ Your browser does not support the
     </style>
 </head>
 
-<body onload="onstart()">
+<body>
     <canvas></canvas>
 
 </body>

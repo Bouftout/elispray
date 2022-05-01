@@ -26,7 +26,15 @@ const connection = mysql.createConnection({ //connection bdd
 
 
 //SECURITER QUI BLOQUE TOUT:
-//app.use(helmet());
+
+app.use(
+    helmet.contentSecurityPolicy({
+        directives: {
+            "style-src": null,
+            "img-src": ["'self'", "data: blob:"],
+        },
+    })
+);
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -585,6 +593,89 @@ io.on("connection", (socket) => {
 // Render chat
 app.set('view engine', 'ejs')
 
+
+app.post('/updatepass', function(req, res) {
+
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
+
+
+
+    if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
+        res.send("Paramètre invalide");
+        res.end();
+        return;
+    }
+
+
+    connection.query(`UPDATE accounts SET password=\'${password}\' WHERE username =\'${username}\';`, function(error, results, fields) {
+        // If there is an issue with the query, output the error
+        if (error) {
+            console.log(error);
+            return res.status(500).json(error);
+        }
+        // If the account exists
+
+        if (results.protocol41 == true) {
+
+        } else {
+            res.redirect("/manage")
+        }
+        res.end();
+    });
+
+});
+
+app.delete('/deleteaccount', function(req, res) {
+
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
+    console.log("deleteaccount : " + username + "   " + password)
+    if (username && password || username != undefined || password != undefined) {
+        connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
+            if (error) {
+                console.log(error);
+                return res.status(500).json(error);
+            }
+            if (results.length > 0) {
+                connection.query(`DELETE FROM accounts WHERE username = '${username}'`, function(error, results, fields) {
+                    if (error) {
+                        console.log(error);
+                        return res.status(500).json(error);
+                    }
+                    res.send("Account deleted");
+                    res.end();
+                });
+            } else {
+                res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
+                res.end();
+            }
+
+        });
+    } else {
+        res.send("Veuillez rentrer un Nom d'utlisateur et mot de passe<br>");
+        res.end();
+    }
+
+});
+
+app.get('/manage', function(req, res) {
+
+    if (req.session.loggedin) {
+        let usernames = req.session.username;
+
+        res.render('manage', {
+            username: usernames
+        });
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+
 app.get('/chat', function(req, res) {
     if (req.session.loggedin) {
 
@@ -764,7 +855,7 @@ app.get('/tour', function(req, res) {
 // Truc de jeu
 app.get('/jeuto', function(req, res) {
 
-    res.redirect("/https://gamejolt.com/@ToniPortal/games")
+    res.redirect("https://gamejolt.com/@ToniPortal/games")
 
 });
 

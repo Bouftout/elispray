@@ -9,39 +9,16 @@
     <link href="styleElsiplay.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
-    <script>
-        function start() {
-
-            document.getElementById('snake').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/snake"; ');
-            })
-            document.getElementById('tetris').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/tetris"; ');
-            })
-            document.getElementById('chat').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/chat"; ');
-            })
-            document.getElementById('td').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/td"; ');
-            })
-            document.getElementById('undertale').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/undertale"; ');
-            })
-            document.getElementById('brick').addEventListener('click', function(event) {
-                window.setTimeout('window.location="/brick"; ');
-            })
-        }
-    </script>
 
 </head>
 
-<body onload="start()">
+<body>
 
     <div>
         <p>
             <h1>
                 <center>Bienvenue sur ELISPLAY !</center>
-
+<button onclick="location.href='/manage'">Manage Account</button>
             </h1>
         </p>
     </div>
@@ -53,15 +30,14 @@
     <ul class="cards">
 
         <li id="snake">
-            <a class="card">
+            <a href="/snake" class="card">
                 <img src="assets/vignette_sanke.png" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path /></svg>
-                        <img class="card__thumb" src="assets/logo_snake.png" alt="" />
+                             <img class="card__thumb" src="assets/logo_tetris.jpg" alt="" />
                         <div class="card__header-text">
-                            <h3 class="card__title">Snake</h3>
-                            <span class="card__status">Arcade</span>
+                            <h3 class="card__title">Tetris</h3>
+                            <span class="card__status">Puzzle</span>
                         </div>
                     </div>
                     <p class="card__description">Jouer au célèbre jeu du Snake, avec plusieurs niveaux de difficulté pour plus challenge !</p>
@@ -69,13 +45,11 @@
             </a>
         </li>
         <li id="tetris">
-            <a class="card">
+            <a href="/tetris" class="card">
                 <img src="assets/vignette_tetris.jpg" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path
-                            /></svg>
-                        <img class="card__thumb" src="assets/logo_tetris.jpg" alt="" />
+                             <img class="card__thumb" src="assets/logo_tetris.jpg" alt="" />
                         <div class="card__header-text">
                             <h3 class="card__title">Tetris</h3>
                             <span class="card__status">Puzzle</span>
@@ -86,13 +60,11 @@
             </a>
         </li>
         <li id="chat">
-            <a class="card">
+            <a href="/chat" class="card">
                 <img src="assets/vignette_chat.png" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path
-                              /></svg>
-                        <img class="card__thumb" src="assets/icone_chat.png" alt="" />
+                           <img class="card__thumb" src="assets/icone_chat.png" alt="" />
                         <div class="card__header-text">
                             <h3 class="card__title">Elisplay's Chatroom</h3>
                             <span class="card__tagline"></span>
@@ -104,12 +76,10 @@
             </a>
         </li>
         <li id="td">
-            <a class="card">
+            <a href="/td" class="card">
                 <img src="assets/vignette_towerD.png" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path
-                                /></svg>
                         <img class="card__thumb" src="assets/icone_towerD.png" alt="" />
                         <div class="card__header-text">
                             <h3 class="card__title">Tower Defense</h3>
@@ -121,12 +91,10 @@
             </a>
         </li>
         <li id="undertale">
-            <a class="card">
+            <a href="/undertale" class="card">
                 <img src="assets/vignette_undertale.jpg" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path
-                                /></svg>
                         <img class="card__thumb" src="assets/icone_undertale.jpg" alt="" />
                         <div class="card__header-text">
                             <h3 class="card__title">Undertale</h3>
@@ -138,12 +106,10 @@
             </a>
         </li>
         <li id="brick">
-            <a class="card">
+            <a href="/brick" class="card">
                 <img src="assets/vignette_brick.jpg" class="card__image" alt="" />
                 <div class="card__overlay">
                     <div class="card__header">
-                        <svg class="card__arc" xmlns="http://www.w3.org/2000/svg"><path
-                                /></svg>
                         <img class="card__thumb" src="assets/icone_brick.jpg" alt="" />
                         <div class="card__header-text">
                             <h3 class="card__title">Casse-brique</h3>
@@ -154,12 +120,8 @@
                 </div>
             </a>
         </li>
+
     </ul>
-
-    <video autoplay loop class="video">
-
-                <source src="assets/mario.mp4" type="video/mp4">
-            </video>
 
 </body>
 
