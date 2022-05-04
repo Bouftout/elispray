@@ -26,7 +26,7 @@ const connection = mysql.createConnection({ //connection bdd
 
 
 //SECURITER QUI BLOQUE TOUT:
-
+/*
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
@@ -34,7 +34,7 @@ app.use(
             "img-src": ["'self'", "data: blob:"],
         },
     })
-);
+);*/
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -381,22 +381,39 @@ var nodemailer = require('nodemailer');
 
 async function emailfunc(email, sujet, msg) {
 
+    // create reusable transporter object using the default SMTP transport
+    /*
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
             user: 'contactelisplay@gmail.com',
             pass: 'rc4mv4isCJ98@RstCE!9'
         }
-    });
+    });*/
+
+    let transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          type: 'OAuth2',
+          user: "contactelisplay@gmail.com",
+          pass: 'rc4mv4isCJ98@RstCE!9',
+          clientId: "953985924764-79k6tbmhrafnie0j5q2ivij27nl6dhd4.apps.googleusercontent.com",
+          clientSecret: "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",
+          refreshToken: "1//04pf26YxnMbcaCgYIARAAGAQSNwF-L9IrjK_fhwjASzLcCIJwPLtG09ZEyl6X8IBsOqZfrystdNwqj2YTlfajXHITOcM48BRf7GU"
+        }
+      });
 
     // send mail with defined transport object
     let info = await transporter.sendMail({
         from: 'contactelisplay@gmail.com', // sender address
         to: email, // list of receivers
         subject: sujet, // Subject line
-        html: `Email: ${email}<br>${msg}`, // plain text body
+        html: `${msg}`, // plain text body
     });
 
+    if(info.err){
+        console.log("error:"+err);
+    }
     console.log("Message sent: %s", info.messageId);
     // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
 
@@ -804,10 +821,12 @@ wss.on('connection', (ws) => {
 //Truc d'email
 app.post('/envoie', function(req, res) {
 
-    let info = req.session.info;
+    let info = req.body.info;
 
     if (req.session.loggedin) {
 
+        console.log(info)
+        emailfunc("contactelisplay@gmail.com",`Sugestion de ${req.session.username}`,info);
 
     } else {
         // Pas connectée.

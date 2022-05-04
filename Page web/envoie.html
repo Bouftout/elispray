@@ -5,31 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,minimum-scale=1">
     <title>Envoie</title>
-    <script>
-        alert("En cours de construction");
-        var value = document.getElementById("textenvoie").value;
-
-        fetch(`${document.location.origin}/envoie`, {
-
-            // Adding method type
-            method: "POST",
-
-            // Adding body or contents to send
-            body: JSON.stringify({
-                info: value
-            }),
-
-            // Adding headers to the request
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            }
-        })
-    </script>
+    <script src="../js/sug.js"></script>
 </head>
 
 <body>
-    <h1>Vous avez des sugestion envoyez les ici !</h1>
-    <input>
+    <h1>Vous avez des suggestion envoyez les ici !</h1>
+    <input id="textenvoie"></input>
+    <button onclick="sug()">Envoyer</button>
 </body>
 
 </html>
