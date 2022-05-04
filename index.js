@@ -168,6 +168,7 @@ app.get('/confirm/:email/:code/', (req, res) => {
                     res.redirect("/login")
                 })
                 list.pop();
+                list = [];
             }
             s++
         }
