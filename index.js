@@ -188,7 +188,7 @@ let myJson;
 app.post('/create', function(req, res) {
 
     if (req.body.username == " " || !req.body.username) {
-        let code = "1" //makeid(5);
+        let code = makeid(5);
         let email = validate(req.body.email);
         emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le lien suivant : https://elisplay.herokuapp.com/confirm/${email}/${code}`);
         myJson = { email: `${email}`, code: `${code}`, pass: `${req.body.password}` };
