@@ -14,7 +14,7 @@ const mysql = require('mysql'),
 server = app.listen(port, err => {
     err ?
         console.log("Error in server setup") :
-        console.log(`Worker ${process.pid} started`);
+        console.log(`Worker ${process.pid} started\nServeur lancer sur: http://localhost:${port}`);
 });
 
 const connection = mysql.createConnection({ //connection bdd
@@ -702,18 +702,6 @@ app.get('/username', function(req, res) {
 
 });
 
-app.get('/game', function(req, res) {
-    if (req.session.loggedin) {
-
-        res.render('game')
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-
-});
-
 app.get('/td', function(req, res) {
     if (req.session.loggedin) {
 
@@ -774,33 +762,6 @@ app.get('/pong', function(req, res) {
 
 });
 
-
-//WebSocket
-
-app.get('/ws', function(req, res) {
-    if (req.session.loggedin) {
-
-        res.sendFile(path.join(__dirname + '/Page web/ws.html'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-
-});
-
-const { WebSocketServer } = require('ws')
-
-const wss = new WebSocketServer({ port: 8080 })
-
-wss.on('connection', (ws) => {
-    ws.on('message', (message) => {
-        console.log(`Received message => ${message}`)
-    })
-    ws.send('ho!')
-})
-
-
 //Truc d'email
 app.post('/envoie', function(req, res) {
 
@@ -827,6 +788,14 @@ app.get('/envoie', function(req, res) {
     }
 
 });
+
+app.get('/game', function(req, res) {
+
+
+    res.sendFile(path.join(__dirname + '/Page web/game.html'));
+
+});
+
 
 app.get('/world', function(req, res) {
     if (req.session.loggedin) {
