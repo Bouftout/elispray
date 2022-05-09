@@ -478,7 +478,7 @@ var highscoretableaucomplet = {
 var count = 0;
 
 app.post('/gg', function(req, res) {
-
+console.log("postgg")
     if (req.session.loggedin) {
 
         connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
@@ -494,9 +494,6 @@ app.post('/gg', function(req, res) {
                 highscoretableaucomplet.snake[i] = results[i].snake;
 
             }
-
-            res.redirect("/gg");
-
         })
 
     } else {
@@ -517,6 +514,7 @@ app.get('/gg', function(req, res) {
     for (i = 0; i < count; i++) {
         $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
     }
+    
     res.send($.html());
 
     res.end();
