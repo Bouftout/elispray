@@ -9,6 +9,7 @@ const mysql = require('mysql'),
     helmet = require("helmet"),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
+    fs = require('fs');
     app = express();
 
 server = app.listen(port, err => {
@@ -85,6 +86,8 @@ app.get('/login', function(req, res) {
         res.sendFile(path.join(__dirname + '/Page web/login.html'));
     }
 });
+
+
 
 
 app.get('/play', function(req, res) {
@@ -181,6 +184,14 @@ app.get('/confirm/:email/:code/', (req, res) => {
     }
 
 
+});
+
+app.get('/disco', function(req, res) {
+
+    req.session.destroy();
+
+    res.redirect("login")
+    
 })
 
 let list = [];
@@ -382,16 +393,6 @@ var nodemailer = require('nodemailer');
 
 async function emailfunc(email, sujet, msg) {
 
-    // create reusable transporter object using the default SMTP transport
-    /*
-    let transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-            user: 'contactelisplay@gmail.com',
-            pass: 'rc4mv4isCJ98@RstCE!9'
-        }
-    });*/
-
     let transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -507,50 +508,20 @@ app.post('/gg', function(req, res) {
 
 app.get('/gg', function(req, res) {
 
-    const document = `<!DOCTYPE html>
-        <html>
-        
-        <head>
-            <meta charset="utf-8">
-            <meta name="viewport" content="width=device-width,minimum-scale=1">
-            <title>GG</title>
-        </head>
-        
-        <body>
-            <form action="/gg" method="post"> <label for="gg">
-                        <!-- font awesome icon --> <i class="fas fa-gg"></i>
-                    </label> <input type="submit" value="gg"> </form>
-            <table>
-                <tr>
-                    <th>Username</th>
-                    <th>Snake</th>
-                    <th>Tetris</th>
-                    <th>TD</th>
-                    <th>Speed</th>
-                    <th>Brick</th>
-                    <th>Flappy</th>
-                </tr>
-                <tr>
-                </tr>
-            </table>
-        </body>
-        
-        </html>`;
+        fs.readFile(path.join(__dirname + '/Page web/gg.html'), 'utf8', function(err, data){ 
 
-    const $ = cheerio.load(document);
+    const $ = cheerio.load(data);
 
 
 
     for (i = 0; i < count; i++) {
         $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
     }
-
-    //	$('h2.title').text(`Votre Score : ${result[0].highscore1}`);
-
     res.send($.html());
 
     res.end();
 
+});
 
 });
 
@@ -867,16 +838,6 @@ app.get('/500', function(req, res, next) {
     next(new Error('keyboard cat!'));
 });
 
-// Error handlers
-
-// Since this is the last non-error-handling
-// middleware use()d, we assume 404, as nothing else
-// responded.
-
-// $ curl http://localhost:3000/notfound
-// $ curl http://localhost:3000/notfound -H "Accept: application/json"
-// $ curl http://localhost:3000/notfound -H "Accept: text/plain"
-
 app.use(function(req, res, next) {
     res.status(404);
 
@@ -892,18 +853,6 @@ app.use(function(req, res, next) {
         }
     })
 });
-
-// error-handling middleware, take the same form
-// as regular middleware, however they require an
-// arity of 4, aka the signature (err, req, res, next).
-// when connect has an error, it will invoke ONLY error-handling
-// middleware.
-
-// If we were to next() here any remaining non-error-handling
-// middleware would then be executed, or if we next(err) to
-// continue passing the error, only error-handling middleware
-// would remain being executed, however here
-// we simply respond with an error page.
 
 app.use(function(err, req, res, next) {
     // we may use properties of the error object
