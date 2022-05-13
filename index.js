@@ -142,30 +142,19 @@ function hash3(password) {
 
 
 app.get('/confirm/:email/:code/', (req, res) => {
-    let s = 0
     for (var i = 0; i < list.length; i++) {
         if (list[i].code == req.params.code && list[i].email == req.params.email) {
-            // we found it
+            console.log("List :" + list)
 
-            if (s == 0) {
-                console.log("Create Account : " + req.params.email)
-                connection.query(`INSERT INTO \`accounts\` (\`email\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${req.params.email}', '${hash3(list[i].pass)}', 0,0,0,0,0,0,0);`, (err, rows) => {
-                    if (err) throw err;
-                    res.redirect("/login")
-                })
-                list.pop();
-                list = [];
-            }
-            s++
+            console.log("Create Account : " + req.params.email)
+            connection.query(`INSERT INTO \`accounts\` (\`email\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${req.params.email}', '${list[i].pass}', 0,0,0,0,0,0,0);`, (err, rows) => {
+                if (err) throw err;
+                res.redirect("/login")
+            })
+
         }
+
     }
-
-
-    if (s == 0) {
-        res.send(`Email: ${req.params.email}\nCode: ${req.params.code}\n`);
-        res.end();
-    }
-
 
 });
 
@@ -186,7 +175,7 @@ const ve = (email) => {
         );
 };
 
-let list = [];
+var list = [];
 let myJson;
 
 app.post('/create', function(req, res) {
@@ -200,13 +189,14 @@ app.post('/create', function(req, res) {
 
         if (ve(email)) {
             let code = makeid(5);
-            emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le button suivant : <br><a href="https://elisplay.herokuapp.com/confirm/${email}/${code}">Elisplay</button>`);
+            // emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le button suivant : <br><a href="https://elisplay.herokuapp.com/confirm/${email}/${code}">Elisplay</button>`);
+            console.log(`http://localhost:3000/confirm/${email}/${code}`)
             myJson = { email: `${email}`, code: `${code}`, pass: `${password}` };
             list.push(myJson);
 
-            console.log(list)
             res.send("Veuillez vérifier votre email");
         } else {
+            console.log("Email invalide")
             res.send("Veuillez marquer un email valide");
         }
 
@@ -326,25 +316,27 @@ function validate(string) {
     return validator.escape(string);
 }
 
+
 app.post('/auth', function(req, res) {
     let password = hash3(req.body.password);
+    let username = validate(req.body.username);
+    let email = validate(req.body.email);
 
-    if (req.body.username == " " || !req.body.username) {
+    if (username == " " || !username || username == "" || email != "") {
 
-        let email = validate(req.body.email);
 
         console.log("pass " + password);
         console.log("email " + email);
 
         if (email && password || email != undefined || password != undefined) {
-            connection.query(`SELECT * FROM accounts WHERE email = '${email}' AND password = '${password}'`, function(error, results, fields) {
+            connection.query(`SELECT email,password FROM accounts WHERE email = '${email}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) {
                     console.log(error);
                     return res.redirect("/login");
                 }
                 if (results.length > 0) {
                     req.session.loggedin = true;
-                    req.session.username = email;
+                    req.session.username = username;
                     // rediction page play.
                     res.redirect('/play');
                 } else {
@@ -357,10 +349,7 @@ app.post('/auth', function(req, res) {
             res.end();
         }
 
-    } else if (req.body.email == " " || !req.body.email) {
-
-
-        let username = validate(req.body.username);
+    } else if (email == " " || !email || email == "" || username != "") {
 
         console.log("pass " + password);
         console.log("user " + username);
@@ -377,6 +366,7 @@ app.post('/auth', function(req, res) {
                     // rediction page play.
                     res.redirect('/play');
                 } else {
+                    console.log("tome")
                     res.send("Mauvais Nom d'utlisateur et/ou mauvais mot de passe<br>");
                 }
                 res.end();

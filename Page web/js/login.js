@@ -8,14 +8,12 @@ window.onload = function() {
 
             usernamediv.style.display = 'none';
             emaildiv.style.display = null;
-
             document.getElementById('username').value = "";
 
         } else {
 
             emaildiv.style.display = 'none';
             usernamediv.style.display = null;
-
             document.getElementById('email').value = "";
         }
 
@@ -31,40 +29,40 @@ window.onload = function() {
         });
     }
 
-    (document.getElementById("btnlog")).addEventListener('click', function(event) {
-
+    (document.getElementById("btnlog")).addEventListener('click', function(e) {
+        /*
+        e.preventDefault();
         submit();
-
+*/
     });
-
-
-
-
 }
 
+/*
+async function submit() {
+    const email = document.getElementById('email').value;
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    console.log(email, username, password);
+    console.log("submit");
+    const data = await fetch(`${document.location.origin}/auth`, {
 
-function submit() {
+        method: "POST",
+
+        body: JSON.stringify({
+            email: email,
+            username: username,
+            password: password
+        }),
+
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+
+    if (data.status == 200) {
+        //  setTimeout(window.location.href = '/play', 500);
+    }
 
 
-
-
-    fetch(`${document.location.origin}/auth`, {
-
-            method: "POST",
-
-            body: JSON.stringify({
-                email: (document.getElementById('email').value),
-                username: (document.getElementById('username').value),
-                password: (document.getElementById('password').value),
-            }),
-
-            // Adding headers to the request
-            headers: {
-                "Content-type": "application/json; charset=UTF-8"
-            }
-        })
-        .then(response => response.json())
-        .then(result => {
-            window.location.href = '/play';
-        }).catch(error => console.log(error));
-}
+}*/
