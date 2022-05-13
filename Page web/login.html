@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr"> 
+<html lang="fr">
 
 <head>
     <meta charset="utf-8">
@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
     <link href="./css/stylelogin.css" rel="stylesheet" type="text/css">
     <script src="./js/login.js"></script>
-    
+
 </head>
 
 <body>
@@ -17,20 +17,20 @@
     <div class="login">
         <h1>Login</h1>
         <button id="change">Email or Username</button>
-        <form action="/auth" method="post">
+        <form>
 
             <div id="emaildiv" style="display: none;">
-            <input type="text" name="email" placeholder="Email" id="email">
+                <input type="text" name="email" placeholder="Email" id="email">
 
-                </div>
+            </div>
 
-                <div id="usernamediv">
-            <input type="text" name="username" placeholder="Username" id="username">
-        </div>
-            
+            <div id="usernamediv">
+                <input type="text" name="username" placeholder="Username" id="username">
+            </div>
+
 
             <input type="password" name="password" placeholder="Password" id="password" required>
-            <input type="submit" value="Login">
+            <input id="btnlog" type="submit" value="Login">
         </form>
     </div>
 
