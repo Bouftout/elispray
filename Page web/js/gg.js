@@ -1,10 +1,11 @@
 window.onload = function() {
     document.getElementById('ggbtn').addEventListener('click', function(event) {
         submit()
-            .then(() => {
 
-            })
-            .catch(err => console.error("Something failed:", err))
+        setTimeout(function() {
+            location.reload();
+        }, 1000);
+
 
     })
 

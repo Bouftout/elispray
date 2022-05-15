@@ -35,9 +35,25 @@
         </div>
         <button onclick="addlvl()">add leve</button>
         <canvas id="game-area"></canvas>
+        <button onclick="submit()">Submite Score</button>
 </body>
 
 <script>
+    async function submit() {
+        await scoreboard.setTopscore()
+        fetch(`${document.location.origin}/highscore`, {
+            method: "POST",
+            body: JSON.stringify({
+                highscore: (scoreboard.getTopscore()),
+                qui: "tetris"
+            }),
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        })
+
+    }
+
     function randomhex() {
         return Math.floor(Math.random() * 16777215).toString(16);
     }
@@ -268,7 +284,6 @@
 
 
     function move(dir) {
-        console.log(scoreboard.getSpeed())
         if (selectedSpeed == 1) {
             fallingShapeRow += dir.y;
             fallingShapeCol += dir.x;

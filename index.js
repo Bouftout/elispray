@@ -189,7 +189,7 @@ app.post('/create', function(req, res) {
 
         if (ve(email)) {
             let code = makeid(5);
-            // emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le button suivant : <br><a href="https://elisplay.herokuapp.com/confirm/${email}/${code}">Elisplay</button>`);
+            emailfunc(email, "Confirmation de votre email", `Veuillez confirmer votre email en cliquant sur le button suivant : <br><a href="https://elisplay.herokuapp.com/confirm/${email}/${code}">Elisplay</button>`);
             console.log(`http://localhost:3000/confirm/${email}/${code}`)
             myJson = { email: `${email}`, code: `${code}`, pass: `${password}` };
             list.push(myJson);
@@ -336,7 +336,7 @@ app.post('/auth', function(req, res) {
                 }
                 if (results.length > 0) {
                     req.session.loggedin = true;
-                    req.session.username = username;
+                    req.session.username = email.slice(0, email.indexOf("@"));
                     // rediction page play.
                     res.redirect('/play');
                 } else {
@@ -547,7 +547,7 @@ app.post('/highscore', function(req, res) {
         // console.log(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`)
         // console.log("highscore : " + highscore);
         // console.log("results : " + results[0].snake);
-        if (results[0].snake < highscore) {
+        if (results[0][qui] < highscore) {
             //UPDATE `accounts` SET snake = 0 WHERE username = 'localhost';
             connection.query(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`, function(error, results, fields) {
                 // If there is an issue with the query, output the error"
@@ -557,7 +557,7 @@ app.post('/highscore', function(req, res) {
                 }
             });
         } else {
-            console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd");
+            console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd\nRes: " + results[0][qui] + " highscore : " + highscore);
             res.end();
         }
 
@@ -572,6 +572,7 @@ const cheerio = require('cheerio');
 var highscoretableaucomplet = {
     "username": ["", ""],
     "snake": [0, 0],
+    "tetris": [0, 0],
 }
 
 var count = 0;
@@ -579,19 +580,19 @@ var count = 0;
 app.post('/gg', function(req, res) {
     console.log("postgg")
 
-    connection.query(`SELECT username,snake FROM accounts`, function(error, results, fields) {
+    connection.query(`SELECT username,snake,tetris FROM accounts`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) {
             console.log(error);
             return res.redirect("/login");
         }
-        console.log(results)
         count = Object.keys(results).length;
         for (i = 0; i < count; i++) {
             highscoretableaucomplet.username[i] = results[i].username;
 
             highscoretableaucomplet.snake[i] = results[i].snake;
 
+            highscoretableaucomplet.tetris[i] = results[i].tetris;
         }
     })
 
@@ -606,26 +607,31 @@ app.get('/gg', function(req, res) {
     
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width,minimum-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>GG</title>
         <script src="./js/gg.js"></script>
-
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    
     </head>
     
-    <body>
-        <button id="ggbtn">Récuper les données</button>
-
-        <table>
+    <body style="background-color: darkblue;">
+        <br>
+        <div class="d-grid gap-2">
+            <button class="btn btn-primary" type="button" id="ggbtn">Récuper les données</button>
+        </div>
+        <br>
+        <table class="table table-bordered table-dark table-sm">
             <tr>
                 <th>Username</th>
                 <th>Snake</th>
                 <th>Tetris</th>
-                <th>TD</th>
-                <th>Speed</th>
-                <th>Brick</th>
-                <th>Flappy</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
+                <th>.</th>
             </tr>
             <tr>
+
             </tr>
         </table>
     </body>
@@ -634,9 +640,14 @@ app.get('/gg', function(req, res) {
 
     const $ = cheerio.load(data);
 
-
-    for (i = 0; i < count; i++) {
-        $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
+    for (i = -1; i < count; i++) {
+        if (i == -1) {
+            console.log("I")
+            highscoretableaucomplet.snake = (highscoretableaucomplet.snake).sort()
+        }
+        if (highscoretableaucomplet.snake[i] !== 0 && i !== -1) {
+            $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
+        }
     }
 
     res.send($.html());

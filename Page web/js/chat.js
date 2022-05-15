@@ -5,6 +5,10 @@ window.onload = function() {
         }
     });
 
+    document.getElementById('send_message').addEventListener('click', function(event) {
+        emitmsg()
+    })
+
 
     function pageScroll() {
         var height = 0;
