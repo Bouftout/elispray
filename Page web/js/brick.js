@@ -4,6 +4,26 @@ var lvl = 1;
 var enregistretext = "";
 var emitter;
 
+
+function submit() {
+    fetch(`${document.location.origin}/highscore`, {
+
+        method: "POST",
+
+        body: JSON.stringify({
+            highscore: (time * lvl),
+            qui: "brick"
+        }),
+
+        // Adding headers to the request
+        headers: {
+            "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+
+}
+
+
 function updatetext(text) {
     time++;
     if (!text || text == "") {
@@ -22,7 +42,14 @@ window.onload = start;
 var interval = "";
 
 function start() {
-    interval = setInterval(function() { updatetext() }, 1000);
+    interval = setInterval(function () { updatetext() }, 1000);
+    (document.getElementById("btn")).addEventListener('click', function (e) {
+submit()
+        /*
+        e.preventDefault();
+        lvl++;*/
+    });
+    
 }
 
 var tchb = 0;
@@ -45,16 +72,16 @@ var Breakout = new Phaser.Class({
     initialize:
 
         function Breakout() {
-        Phaser.Scene.call(this, {
-            key: 'breakout'
-        });
+            Phaser.Scene.call(this, {
+                key: 'breakout'
+            });
 
-        this.bricks;
-        this.paddle;
-        this.ball;
-    },
+            this.bricks;
+            this.paddle;
+            this.ball;
+        },
 
-    preload: function() {
+    preload: function () {
         this.load.atlas('red', '/brick/flares.png', '/brick/flares.json');
 
         var text2 = this.add.text(685, 570, "Klass bryke", { fill: '#ffffff' });
@@ -72,7 +99,7 @@ var Breakout = new Phaser.Class({
 
     },
 
-    create: function() {
+    create: function () {
 
         //  Enable world bounds, but disable the floor
         this.physics.world.setBoundsCollision(true, true, true, false);
@@ -102,7 +129,7 @@ var Breakout = new Phaser.Class({
         this.physics.add.collider(this.ball, this.paddle, this.hitPaddle, null, this);
 
         //  Input events
-        this.input.on('pointermove', function(pointer) {
+        this.input.on('pointermove', function (pointer) {
 
             //  Keep the paddle within the game
             this.paddle.x = Phaser.Math.Clamp(pointer.x, 52, 748);
@@ -113,7 +140,7 @@ var Breakout = new Phaser.Class({
 
         }, this);
 
-        this.input.on('pointerup', function(pointer) {
+        this.input.on('pointerup', function (pointer) {
 
             if (this.ball.getData('onPaddle')) {
                 this.ball.setVelocity(-75, -300);
@@ -124,23 +151,23 @@ var Breakout = new Phaser.Class({
 
     },
 
-    hitBrick: function(ball, brick) {
-        var particles = this.add.particles('red');
+    hitBrick: function (ball, brick) {
+        var particles = this.add.particles('red'); //particule
 
         part(particles, brick.x, brick.y);
         emitter.explode(10);
 
-        brick.setDataEnabled();
+        brick.setDataEnabled(); //activer les données dans les bricks
 
         if (brick.data.get('tchbr') == undefined) {
             brick.data.set('tchbr', 1);
         } else {
             brick.data.set('tchbr', (brick.data.get('tchbr') + 1));
         }
-
         console.log(brick.data.get('tchbr'))
 
-        if (brick.data.get('tchbr') == 2) {
+        if (brick.data.get('tchbr') === (lvl + 1)) {
+            //disable la brick
             brick.disableBody(true, true);
         }
 
@@ -151,7 +178,7 @@ var Breakout = new Phaser.Class({
 
     },
 
-    resetBall: function() {
+    resetBall: function () {
         vie--;
         updatetext()
         if (vie == 0) {
@@ -161,11 +188,13 @@ var Breakout = new Phaser.Class({
             this.events.off(); // disable all active events
             this.scene.restart(); // restart current scene
 
+            submit();
+
             vie = 3;
             time = 0;
             alert("Game Over");
 
-            start();
+            start(); // restart game
         } else {
             this.ball.setVelocity(0);
             this.ball.setPosition(this.paddle.x, 500);
@@ -174,17 +203,17 @@ var Breakout = new Phaser.Class({
 
     },
 
-    resetLevel: function() {
+    resetLevel: function () {
         this.resetBall();
 
-        this.bricks.children.each(function(brick) {
+        this.bricks.children.each(function (brick) {
 
             brick.enableBody(false, 0, 0, true, true);
 
         });
     },
 
-    hitPaddle: function(ball, paddle) {
+    hitPaddle: function (ball, paddle) {
         var diff = 0;
 
         if (ball.x < paddle.x) {
@@ -202,7 +231,7 @@ var Breakout = new Phaser.Class({
         }
     },
 
-    update: function() {
+    update: function () {
 
         if (this.ball.y > 600) {
             this.resetBall();

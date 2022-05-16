@@ -547,7 +547,18 @@ app.post('/highscore', function(req, res) {
         // console.log(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`)
         // console.log("highscore : " + highscore);
         // console.log("results : " + results[0].snake);
-        if (results[0][qui] < highscore) {
+var iffe;
+
+if(results[0].brick == "" || results[0].brick == undefined){
+    console.log("notbrick");
+    iffe = results[0][qui] < highscore;
+} else {
+    console.log("brick");
+    iffe = highscore < results[0].brick;
+}
+
+
+        if (iffe) {
             //UPDATE `accounts` SET snake = 0 WHERE username = 'localhost';
             connection.query(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`, function(error, results, fields) {
                 // If there is an issue with the query, output the error"
@@ -556,6 +567,7 @@ app.post('/highscore', function(req, res) {
                     return res.redirect("/login");
                 }
             });
+            console.log("highscore : " + highscore);
         } else {
             console.log("Non nécessaire de faire une demande a la bdd car il a un meilleur score sur la bdd\nRes: " + results[0][qui] + " highscore : " + highscore);
             res.end();
