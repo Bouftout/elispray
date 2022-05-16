@@ -54,7 +54,7 @@ app.use(session({
 
 
 // Fonction qui permet de 
-function p(res,req,p) {
+function p(res, req, p) {
     if (req.session.loggedin) {
         return res.sendFile(path.join(`${__dirname}/Page web/${p}.html`));
     } else {
@@ -499,6 +499,7 @@ app.post('/highscore', function(req, res) {
     var qui = validate(req.body.qui);
     var username = validate(req.session.username);
 
+    console.log("highscore " + highscore + " qui " + qui + " username " + username);
 
     connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
         // If there is an issue with the query, output the error
@@ -509,15 +510,15 @@ app.post('/highscore', function(req, res) {
         // console.log(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`)
         // console.log("highscore : " + highscore);
         // console.log("results : " + results[0].snake);
-var iffe;
+        var iffe;
 
-if(results[0].brick == "" || results[0].brick == undefined){
-    console.log("notbrick");
-    iffe = results[0][qui] < highscore;
-} else {
-    console.log("brick");
-    iffe = highscore < results[0].brick;
-}
+        if (results[0].brick == "" || results[0].brick == undefined) {
+            console.log("notbrick");
+            iffe = results[0][qui] < highscore;
+        } else {
+            console.log("brick");
+            iffe = highscore < results[0].brick;
+        }
 
 
         if (iffe) {
@@ -547,6 +548,7 @@ var highscoretableaucomplet = {
     "username": ["", ""],
     "snake": [0, 0],
     "tetris": [0, 0],
+    "brick": [0, 0],
 }
 
 var count = 0;
@@ -567,6 +569,8 @@ app.post('/gg', function(req, res) {
             highscoretableaucomplet.snake[i] = results[i].snake;
 
             highscoretableaucomplet.tetris[i] = results[i].tetris;
+
+            highscoretableaucomplet.brick[i] = results[i].brick;
         }
     })
 
@@ -801,11 +805,11 @@ app.get('/username', function(req, res) {
 
 app.get('/tetris', function(req, res) {
 
-    p(res,req, "tetris");
+    p(res, req, "tetris");
 });
 
 app.get('/court', function(req, res) {
-    p(res,req, "court");
+    p(res, req, "court");
 });
 
 app.get('/snake', function(req, res) {
@@ -939,6 +943,19 @@ app.get('/jeuto', function(req, res) {
     res.redirect("https://gamejolt.com/@ToniPortal/games")
 
 });
+
+app.get('/platf', function(req, res) {
+    if (req.session.loggedin) {
+
+        res.sendFile(path.join(__dirname + '/Page web/tourpartour/index.html'));
+
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
 
 app.get('/404', function(req, res, next) {
     // trigger a 404 since no other middleware
