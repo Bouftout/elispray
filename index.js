@@ -490,7 +490,18 @@ async function emailfunc(email, sujet, msg) {
 }
 
 
-
+app.post('/click', function(req, res) {
+    console.log(req.body.highscore)
+    console.log(req.body.qui)
+    console.log(req.body.username)
+    connection.query(`UPDATE \`accounts\` SET ${req.body.qui} = ${req.body.highscore} WHERE username = '${req.body.username}';`, function(error, results, fields) {
+        // If there is an issue with the query, output the error"
+        if (error) {
+            console.log(error);
+            return res.redirect("/login");
+        }
+    });
+})
 
 
 app.post('/highscore', function(req, res) {
@@ -499,7 +510,7 @@ app.post('/highscore', function(req, res) {
     var qui = validate(req.body.qui);
     var username = validate(req.session.username);
 
-    console.log("highscore " + highscore + " qui " + qui + " username " + username);
+    console.log("High")
 
     connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
         // If there is an issue with the query, output the error
