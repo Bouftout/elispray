@@ -53,9 +53,13 @@ app.use(session({
 }));
 
 
-
-function p(p) {
-    return path.join(`${__dirname}/Page web/${p}.html`)
+// Fonction qui permet de 
+function p(res,req,p) {
+    if (req.session.loggedin) {
+        return res.sendFile(path.join(`${__dirname}/Page web/${p}.html`));
+    } else {
+        return res.redirect("/login")
+    }
 }
 
 // http://localhost:3000/
@@ -67,22 +71,15 @@ app.get('/', function(req, res) {
 
     } else {
         res.cookie(`home`, `nohome`);
-        res.sendFile(p('Elisplay'));
+        res.sendFile(path.join(__dirname + '/Page web/ElisPlay.html'));
     }
 
 
 });
-
-
-
 app.get('/login', function(req, res) {
-
     if (req.session.loggedin) {
-
         res.redirect("/play")
-
     } else {
-        // Render login template
         res.sendFile(path.join(__dirname + '/Page web/login.html'));
     }
 });
@@ -91,47 +88,20 @@ app.get('/login', function(req, res) {
 
 
 app.get('/play', function(req, res) {
-    // Render login template
     if (req.session.loggedin) {
-        res.sendFile(p('pagePlay2'));
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-
-});
-
-
-app.get('/tetris', function(req, res) {
-    // Render login template
-    if (req.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/tetris.html'));
+        res.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
 
     } else {
         // Pas connectée.
         res.redirect("/login")
     }
 });
-
-app.get('/court', function(req, res) {
-    // Render login template
-    if (req.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/court.html'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-});
-
-
 
 
 app.get('/create', function(req, res) {
     // Render login template
     res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
-
 
 function hash3(password) {
     var buf_pass = Buffer.from(`${password}XHAMAC1guUCaI9jUu6E3s3SCORAfZQqAqt0ty8VGQL1yWfPnSoJuRiip5mmnlISkXFyxaLpQdNpqYZSDSxZ25IP1AUAncFOsbsMY11VfyeilrWiIjNPdQ3MAc2FSBjMVJbSrGj6`);
@@ -520,15 +490,7 @@ async function emailfunc(email, sujet, msg) {
 }
 
 
-app.get('/snake', function(req, res) {
-    if (req.session.loggedin) {
-        res.sendFile(path.join(__dirname + '/Page web/snake.html'));
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
 
-});
 
 
 app.post('/highscore', function(req, res) {
@@ -810,6 +772,7 @@ app.get('/manage', function(req, res) {
 });
 
 
+
 app.get('/chat', function(req, res) {
     if (req.session.loggedin) {
 
@@ -836,6 +799,26 @@ app.get('/username', function(req, res) {
 
 });
 
+app.get('/tetris', function(req, res) {
+
+    p(res,req, "tetris");
+});
+
+app.get('/court', function(req, res) {
+    p(res,req, "court");
+});
+
+app.get('/snake', function(req, res) {
+    if (req.session.loggedin) {
+        res.sendFile(path.join(__dirname + '/Page web/snake.html'));
+    } else {
+        // Pas connectée.
+        res.redirect("/login")
+    }
+
+});
+
+//Tower Defense
 app.get('/td', function(req, res) {
     if (req.session.loggedin) {
 
@@ -848,18 +831,7 @@ app.get('/td', function(req, res) {
 
 });
 
-app.get('/snake2', function(req, res) {
-    if (req.session.loggedin) {
-
-        res.sendFile(path.join(__dirname + '/Page web/snake2.html'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-
-});
-
+//casse brick
 app.get('/brick', function(req, res) {
     if (req.session.loggedin) {
 
@@ -872,6 +844,7 @@ app.get('/brick', function(req, res) {
 
 });
 
+//UNdertale game
 app.get('/undertale', function(req, res) {
     if (req.session.loggedin) {
 
@@ -884,6 +857,7 @@ app.get('/undertale', function(req, res) {
 
 });
 
+//Game pong
 app.get('/pong', function(req, res) {
     if (req.session.loggedin) {
 
@@ -896,7 +870,7 @@ app.get('/pong', function(req, res) {
 
 });
 
-//Truc d'email
+//Page de suggestion
 app.post('/envoie', function(req, res) {
 
     let info = req.body.info;
@@ -913,6 +887,7 @@ app.post('/envoie', function(req, res) {
 
 });
 
+//Page de suggestion
 app.get('/envoie', function(req, res) {
     if (req.session.loggedin) {
 
@@ -925,14 +900,14 @@ app.get('/envoie', function(req, res) {
 
 });
 
+//Les game ? (en dev)
 app.get('/game', function(req, res) {
-
 
     res.sendFile(path.join(__dirname + '/Page web/game.html'));
 
 });
 
-
+// Une partie de Remastered SuperWorld Jojo
 app.get('/world', function(req, res) {
     if (req.session.loggedin) {
 
@@ -945,6 +920,7 @@ app.get('/world', function(req, res) {
 
 });
 
+//Jeux en dev
 app.get('/tour', function(req, res) {
     if (req.session.loggedin) {
 
@@ -999,6 +975,7 @@ app.use(function(req, res, next) {
     })
 });
 
+//500 error render
 app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('500', { error: err });
