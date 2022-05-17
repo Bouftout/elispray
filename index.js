@@ -71,7 +71,7 @@ app.get('/', function(req, res) {
 
     } else {
         res.cookie(`home`, `nohome`);
-        res.sendFile(path.join(__dirname + '/Page web/ElisPlay.html'));
+        res.redirect("/login")
     }
 
 
@@ -635,7 +635,7 @@ app.get('/gg', function(req, res) {
             highscoretableaucomplet.snake = (highscoretableaucomplet.snake).sort()
         }
         if (highscoretableaucomplet.snake[i] !== 0 && i !== -1) {
-            $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td></tr>`);
+            $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td><td>${highscoretableaucomplet.tetris[i]}</td></tr>`);
         }
     }
 
