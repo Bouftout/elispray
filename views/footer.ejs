@@ -1,4 +1,6 @@
-<button id=homePage> Retour au menu principal !</button>
+<button id="homePage"> Retour au menu principal !</button>
+
+<button id="avant"> Retour a la page d'avant !</button>
 
 </body>
 
@@ -6,10 +8,34 @@
 
 const back = document.getElementById('homePage');
 
-function gobak() {
-document.location.href= https://elisplay.herokuapp.com/play
+window.onload = function() {
+
+    (document.getElementById("homePage")).addEventListener('click', function(e) {
+e.preventDefault();
+        menu()
+  
+    });
+
+
+
+    (document.getElementById("avant")).addEventListener('click', function(e) {
+e.preventDefault();
+        gobak()
+  
+    });
 }
 
 
-elt.addEventListener('click', gobak() {});
+
+function menu() {
+document.location.href= "/play"
+}
+function gobak() {
+    history.back()
+}
+
+</script>
+
+<link href="styleElsiplay.css" rel="stylesheet">
+
 </html>

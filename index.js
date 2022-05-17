@@ -164,7 +164,7 @@ app.post('/create', function(req, res) {
             myJson = { email: `${email}`, code: `${code}`, pass: `${password}` };
             list.push(myJson);
 
-            res.send("Veuillez vérifier votre email");
+            res.sendFile(path.join(`${__dirname}/Page web/verifemail.html`));
         } else {
             console.log("Email invalide")
             res.send("Veuillez marquer un email valide");
