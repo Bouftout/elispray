@@ -560,6 +560,7 @@ var highscoretableaucomplet = {
     "snake": [0, 0],
     "tetris": [0, 0],
     "brick": [0, 0],
+    "highscore1": [0, 0],
 }
 
 var count = 0;
@@ -567,7 +568,7 @@ var count = 0;
 app.post('/gg', function(req, res) {
     console.log("postgg")
 
-    connection.query(`SELECT username,snake,tetris FROM accounts`, function(error, results, fields) {
+    connection.query(`SELECT username,snake,tetris,brick,highscore1 FROM accounts`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) {
             console.log(error);
@@ -582,6 +583,8 @@ app.post('/gg', function(req, res) {
             highscoretableaucomplet.tetris[i] = results[i].tetris;
 
             highscoretableaucomplet.brick[i] = results[i].brick;
+
+            highscoretableaucomplet.highscore1[i] = results[i].highscore1;
         }
     })
 
@@ -614,8 +617,8 @@ app.get('/gg', function(req, res) {
                 <th>Username</th>
                 <th>Snake</th>
                 <th>Tetris</th>
-                <th>.</th>
-                <th>.</th>
+                <th>Brick</th>
+                <th>Highscore1</th>
                 <th>.</th>
                 <th>.</th>
             </tr>
@@ -635,7 +638,7 @@ app.get('/gg', function(req, res) {
             highscoretableaucomplet.snake = (highscoretableaucomplet.snake).sort()
         }
         if (highscoretableaucomplet.snake[i] !== 0 && i !== -1) {
-            $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td><td>${highscoretableaucomplet.tetris[i]}</td></tr>`);
+            $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td><td>${highscoretableaucomplet.tetris[i]}</td><td>${highscoretableaucomplet.brick[i]}</td><td>${highscoretableaucomplet.highscore1[i]}</td></tr>`);
         }
     }
 
