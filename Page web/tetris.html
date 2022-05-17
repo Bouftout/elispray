@@ -12,30 +12,40 @@
             height: 640px;
             margin: -320px 0 0 -320px;
         }
+        li {
+            margin-right:10px;
+        }
     </style>
+    <link href="styleElsiplay.css" rel="stylesheet">
 </head>
 
 <body>
-    <div class="tetris-toolbar">
-        <div style="display:inline-block;margin-right:10px;">
-            <span>Theme:</span>
-            <select autocomplete="off" onchange="getTheme()" id="select">
-                <option selected>Theme de base</option>
-                <option>Dark Theme</option>
-            </select>
-        </div>
-        <div style="display:inline-block;margin-right:10px;">
-            <span>Mode:</span>
-            <select onchange="selectmode()" id="selectMode">
-                <option value="1" selected>Medium</option>
-                <option value="2">Hard</option>
-                <option value="3">Very Hard</option>
-                <option value="4">Impossible</option>
-            </select>
-        </div>
-        <button onclick="addlvl()">add leve</button>
+
+    <ul class="navbar navli">
+       <li> <div class="tetris-toolbar">
+            <div >
+                <span>Theme:</span>
+                <select autocomplete="off" onchange="getTheme()" id="select">
+                    <option selected>Theme de base</option>
+                    <option>Dark Theme</option>
+                </select>
+            </div></li>
+            <li> <div >
+                <span>Mode:</span>
+                <select onchange="selectmode()" id="selectMode">
+                    <option value="1" selected>Medium</option>
+                    <option value="2">Hard</option>
+                    <option value="3">Very Hard</option>
+                    <option value="4">Impossible</option>
+                </select>
+            </div></li>
+            <li><button onclick="addlvl()">Lvl++ </button></li>
+            <li><button onclick="submit()">Submit Score</button></li>
+      </ul> 
+
+
         <canvas id="game-area"></canvas>
-        <button onclick="submit()">Submite Score</button>
+        
 </body>
 
 <script>
