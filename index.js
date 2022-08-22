@@ -21,7 +21,7 @@ server = app.listen(port, err => {
 const connection = mysql.createConnection({ //connection bdd
     host: 'mysql-noptestnop.alwaysdata.net',
     user: '277383',
-    password: 'totoni13',
+    password: 'nerfakshan',
     database: 'noptestnop_elisplay'
 });
 
