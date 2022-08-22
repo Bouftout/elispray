@@ -19,10 +19,10 @@ server = app.listen(port, err => {
 });
 
 const connection = mysql.createConnection({ //connection bdd
-    host: 'mysql-bellone.alwaysdata.net',
-    user: 'bellone',
-    password: 'nerfakshan',
-    database: 'bellone_login'
+    host: 'mysql-noptestnop.alwaysdata.net',
+    user: '277383',
+    password: 'totoni13',
+    database: 'noptestnop_elisplay'
 });
 
 
