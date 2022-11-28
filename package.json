@@ -44,7 +44,7 @@
         "path": "^0.12.7",
         "phaser": "^3.55.2",
         "sanitize-html": "^2.7.0",
-        "socket.io": "^4.4.1",
+        "socket.io": "^4.5.4",
         "validator": "^13.7.0",
         "xxhash-addon": "^1.4.0"
     },
