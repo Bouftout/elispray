@@ -10,7 +10,7 @@ const mysql = require('mysql'),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
     fs = require('fs');
-app = express(); 
+app = express();
 
 server = app.listen(port, err => {
     err ?

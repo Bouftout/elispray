@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Login</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+    <link href="./css/stylelogin.css" rel="stylesheet" type="text/css">
+    <script src="./js/login.js"></script>
+
+</head>
+
+<body>
+    <button id="createbtn">Create New Account</button>
+
+    <div class="login">
+        <h1>Login</h1>
+        <button id="change">Mail ou Pseudonyme</button>
+        <form action="/auth" method="post">
+
+            <div id="emaildiv" style="display: none;">
+                <input type="text" name="email" placeholder="Email" id="email">
+
+            </div>
+
+            <div id="usernamediv">
+                <input type="text" name="username" placeholder="Pseudonyme" id="username">
+            </div>
+
+
+            <input type="password" name="password" placeholder="Mot de passe" id="password" required>
+            <input id="btnlog" type="submit" value="Login">
+        </form>
+    </div>
+
+</body>
+
+</html>

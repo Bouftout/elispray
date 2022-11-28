@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accueil</title>
+    <link href="styleElsiplay.css" rel="stylesheet">
+    <script src="./js/pageplay.js"></script>
+
+</head>
+
+<body>
+    <ul class="navbar navli">
+        <li><a href="/manage">Mon compte</a></li>
+        <li><a href="/envoie">Suggestion !</a></li>
+        <li class="disco"><a id="discobtn">Déconnexion</a></li>
+        <li><a href="/gg">Tableau des scores</a></li>
+      </ul> 
+      <br>
+      <br>
+      <br>
+    <div>
+        <p>
+            <h1>
+                <center>Bienvenue sur ELISPLAY !</center>   
+            </h1>
+        </p>
+    </div>
+    <br>
+    <h2>Clique sur l'image du jeu de ton choix pour y jouer !) Enjoy !</h2>
+
+    <ul class="cards">
+
+        <li id="snake">
+            <a href="/snake" class="card">
+                <img src="assets/vignette_sanke.png" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/logo_tetris.jpg" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Snake</h3>
+                            <span class="card__status">Puzzle</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Jouer au célèbre "Snake", avec plusieurs niveaux de difficulté pour plus challenge, manger le plus de fruits possible pour vous hisser le plus haut dans le classement !</p>
+                </div>
+            </a>
+        </li>
+        <li id="tetris">
+            <a href="/tetris" class="card">
+                <img src="assets/vignette_tetris.jpg" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/logo_tetris.jpg" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Tetris</h3>
+                            <span class="card__status">Puzzle</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Jouez dès maintenant au deuxième jeux le plus vendu de l'histoire, l'iconique TETRIS !</p>
+                </div>
+            </a>
+        </li>
+        <li id="chat">
+            <a href="/chat" class="card">
+                <img src="assets/vignette_chat.png" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/icone_chat.png" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Elisplay's Chat</h3>
+                            <span class="card__tagline"></span>
+                            <span class="card__status">Lieu de discussion</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Partagez vôtre experience avec les autres joueurs, et faites des rencontre spectaculaire sur le chat !</p>
+                </div>
+            </a>
+        </li>
+        <li id="td">
+            <a href="/td" class="card">
+                <img src="assets/vignette_towerD.png" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/icone_towerD.png" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Tower Defense</h3>
+                            <span class="card__status">Stratégie</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Protégez vous de vagues d'ennemis sans fin !</p>
+                </div>
+            </a>
+        </li>
+        <li id="undertale">
+            <a href="/undertale" class="card">
+                <img src="assets/vignette_undertale.jpg" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/icone_undertale.jpg" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Undertale</h3>
+                            <span class="card__status">Jeu Indé</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Mesurez vous aux plus grand adversaires du très célèbre Undertale !</p>
+                </div>
+            </a>
+        </li>
+        <li id="brick">
+            <a href="/brick" class="card">
+                <img src="assets/vignette_brick.jpg" class="card__image" alt="" />
+                <div class="card__overlay">
+                    <div class="card__header">
+                        <img class="card__thumb" src="assets/icone_brick.jpg" alt="" />
+                        <div class="card__header-text">
+                            <h3 class="card__title">Casse-brique</h3>
+                            <span class="card__status">Arcade</span>
+                        </div>
+                    </div>
+                    <p class="card__description">Un jeu de casse brique... que dire de plus ^^</p>
+                </div>
+            </a>
+        </li>
+
+    </ul>
+
+</body>
+
+</html>
