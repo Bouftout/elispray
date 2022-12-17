@@ -10,6 +10,7 @@ const mysql = require('mysql'),
     helmet = require("helmet"),
     { XXHash32, XXHash64, XXHash3 } = require('xxhash-addon'),
     hasher3 = new XXHash3(require('fs').readFileSync('package-lock.json')),
+    config = require('./config.json'),
     fs = require('fs');
 app = express();
 
@@ -20,10 +21,10 @@ server = app.listen(port,ip, err => {
 });
 
 const connection = mysql.createConnection({ //connection bdd
-    host: 'mysql-noptestnop.alwaysdata.net',
-    user: '277383',
-    password: 'nerfakshan',
-    database: 'noptestnop_elisplay'
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    database: config.database
 });
 
 
