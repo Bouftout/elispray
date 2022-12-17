@@ -6,7 +6,8 @@
     "scripts": {
         "test": "nodemon index.js",
         "start": "node index.js",
-        "herokupush": "git push heroku master"
+        "herokupush": "git push heroku master",
+        "deploy": "node ftpdeploy.js"
     },
     "nodemonConfig": {
         "ignore": [

@@ -3,7 +3,8 @@ const mysql = require('mysql'),
     session = require('express-session'),
     path = require('path'),
     cookieParser = require('cookie-parser'),
-    port = (process.env.PORT || 3000),
+    port = (process.env.PORT || process.env.ALWAYSDATA_HTTPD_PORT || 8100),
+    ip = (process.env.IP || process.env.ALWAYSDATA_HTTPD_IP),
     portws = (process.env.PORT || 8080),
     validator = require('validator'),
     helmet = require("helmet"),
@@ -12,7 +13,7 @@ const mysql = require('mysql'),
     fs = require('fs');
 app = express();
 
-server = app.listen(port, err => {
+server = app.listen(port,ip, err => {
     err ?
         console.log("Error in server setup") :
         console.log(`Worker ${process.pid} started\nServeur lancer sur: http://localhost:${port}`);
@@ -26,15 +27,16 @@ const connection = mysql.createConnection({ //connection bdd
 });
 
 
-
+//SECURITER QUI BLOQUE TOUT:
+/*
 app.use(
     helmet.contentSecurityPolicy({
         directives: {
-            "style-src": "'self' 'unsafe-inline'",
+            "style-src": null,
             "img-src": ["'self'", "data: blob:"],
         },
     })
-);
+);*/
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -52,7 +54,7 @@ app.use(session({
 }));
 
 
-// Fonction qui permet de ne pas avoir de doublons.
+// Fonction qui permet de 
 function p(res, req, p) {
     if (req.session.loggedin) {
         return res.sendFile(path.join(`${__dirname}/Page web/${p}.html`));
@@ -62,7 +64,7 @@ function p(res, req, p) {
 }
 
 // http://localhost:3000/
-app.get('/', function (req, res) {
+app.get('/', function(req, res) {
 
     if (req.cookies.home == "nohome") {
         // Render login template
@@ -75,9 +77,7 @@ app.get('/', function (req, res) {
 
 
 });
-
-//Page de login
-app.get('/login', function (req, res) {
+app.get('/login', function(req, res) {
     if (req.session.loggedin) {
         res.redirect("/play")
     } else {
@@ -86,8 +86,9 @@ app.get('/login', function (req, res) {
 });
 
 
-//Page d'accueil.
-app.get('/play', function (req, res) {
+
+
+app.get('/play', function(req, res) {
     if (req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/Page web/pagePlay2.html'));
 
@@ -98,13 +99,11 @@ app.get('/play', function (req, res) {
 });
 
 
-//Crée un nouveau compte
-app.get('/create', function (req, res) {
+app.get('/create', function(req, res) {
     // Render login template
     res.sendFile(path.join(__dirname + '/Page web/create.html'));
 });
 
-//Function de hashage des mots de passe
 function hash3(password) {
     var buf_pass = Buffer.from(`${password}XHAMAC1guUCaI9jUu6E3s3SCORAfZQqAqt0ty8VGQL1yWfPnSoJuRiip5mmnlISkXFyxaLpQdNpqYZSDSxZ25IP1AUAncFOsbsMY11VfyeilrWiIjNPdQ3MAc2FSBjMVJbSrGj6`);
     var passwords = hasher3.hash(buf_pass);
@@ -112,7 +111,7 @@ function hash3(password) {
     return passwords;
 }
 
-//Création du compte avec l'email grâce au lien de la confirmation
+
 app.get('/confirm/:email/:code/', (req, res) => {
     for (var i = 0; i < list.length; i++) {
         if (list[i].code == req.params.code && list[i].email == req.params.email) {
@@ -130,8 +129,7 @@ app.get('/confirm/:email/:code/', (req, res) => {
 
 });
 
-//Disconnect
-app.get('/disco', function (req, res) {
+app.get('/disco', function(req, res) {
 
     req.session.destroy();
 
@@ -140,7 +138,7 @@ app.get('/disco', function (req, res) {
 })
 
 
-const ve = (email) => { //verifie si l'email est valide
+const ve = (email) => {
     return String(email)
         .toLowerCase()
         .match(
@@ -151,13 +149,13 @@ const ve = (email) => { //verifie si l'email est valide
 var list = [];
 let myJson;
 
-app.post('/create', function (req, res) {
+app.post('/create', function(req, res) {
 
     let password = hash3(req.body.password);
     let email = validate(req.body.email);
     let username = validate(req.body.username);
 
-    if (username == " " || !username || username == "" || email != "") { // Si le username est vide ou n'est pas valide
+    if (username == " " || !username || username == "" || email != "") {
 
 
         if (ve(email)) {
@@ -175,12 +173,17 @@ app.post('/create', function (req, res) {
 
 
 
-    } else if (email == " " || !email || email == "" || username != "") { // Si l'email est vide ou n'existe pas
+    } else if (email == " " || !email || email == "" || username != "") {
+
+        // Capture the input fields
 
         // Ensure the input fields exists and are not empty
         if (username && password) {
-            // Check if the username is already taken
-            connection.query('SELECT username FROM accounts', function (error, resultaccount, fields) {
+            // Execute SQL query that'll select the account from the database based on the specified username and password
+
+            //INSERT INTO `accounts` (`id`, `username`, `password`, `highscore1`) VALUES (1, 'test', 'test', 0);
+
+            connection.query('SELECT username FROM accounts', function(error, resultaccount, fields) {
                 // If there is an issue with the query, output the error
                 if (error) {
                     console.log(error);
@@ -194,7 +197,7 @@ app.post('/create', function (req, res) {
                 }
 
                 if (verifusername == false) {
-                    connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function (error, results, fields) {
+                    connection.query(`INSERT INTO \`accounts\` (\`username\`, \`password\`, \`snake\`, \`tetris\`, \`td\`, \`court\`, \`brick\`, \`flappy\`, \`highscore1\`) VALUES ('${username}', '${password}', 0,0,0,0,0,0,0);`, [username, password], function(error, results, fields) {
                         // If there is an issue with the query, output the error
                         if (error) {
                             console.log(error);
@@ -229,11 +232,47 @@ app.post('/create', function (req, res) {
     }
 });
 
+app.post('/updatepass', function(req, res) {
 
+    let username = validate(req.body.username);
+    let password = hash3(req.body.password);
 
+    if (typeof username != "string" || (password).lastIndexOf("DROP") != -1) {
+        res.send("Paramètre invalide");
+        res.end();
+        return;
+    }
 
+    connection.query(`UPDATE accounts SET password=\'${password}\' WHERE username =\'${username}\';`, function(error, results, fields) {
+        // If there is an issue with the query, output the error
+        if (error) {
+            console.log(error);
+            return res.redirect("/login");
+        }
+        // If the account exists
 
-//Function pour faire des charactere aléatoire avec la longueur
+        if (results.protocol41 == true) {
+
+        } else {
+            res.redirect("/manage")
+        }
+        res.end();
+    });
+
+});
+
+app.get('/updatepass', function(req, res) {
+
+    if (req.session.loggedin) {
+
+        res.sendFile(path.join(__dirname + '/Page web/manage.html'));
+
+    } else {
+        // Render login template
+        res.redirect('/login')
+    }
+});
+
 function makeid(length) {
     var result = '';
     var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -244,13 +283,12 @@ function makeid(length) {
     return result;
 }
 
-//Function de protection des données(xss,sql,etc)
 function validate(string) {
     return validator.escape(string);
 }
 
-//Login page Post
-app.post('/auth', function (req, res) {
+
+app.post('/auth', function(req, res) {
     let password = hash3(req.body.password);
     let username = validate(req.body.username);
     let email = validate(req.body.email);
@@ -262,7 +300,7 @@ app.post('/auth', function (req, res) {
         console.log("email " + email);
 
         if (email && password || email != undefined || password != undefined) {
-            connection.query(`SELECT email,password FROM accounts WHERE email = '${email}' AND password = '${password}'`, function (error, results, fields) {
+            connection.query(`SELECT email,password FROM accounts WHERE email = '${email}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) {
                     console.log(error);
                     return res.redirect("/login");
@@ -288,7 +326,7 @@ app.post('/auth', function (req, res) {
         console.log("user " + username);
 
         if (username && password || username != undefined || password != undefined) {
-            connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function (error, results, fields) {
+            connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
                 if (error) {
                     console.log(error);
                     return res.redirect("/login");
@@ -315,12 +353,13 @@ app.post('/auth', function (req, res) {
 
 
 
-var nodemailer = require('nodemailer'); // Import Nodemailer Package
+var nodemailer = require('nodemailer');
 
-//Function pour envoyer un email.
+
+
+
 async function emailfunc(email, sujet, msg) {
 
-    //Email de confirmation
     const htmlemail = `<!DOCTYPE html>
 <html>
 
@@ -406,7 +445,7 @@ async function emailfunc(email, sujet, msg) {
 
 </html>`;
 
-    // Generate confirmation email from gmail
+    // Generate test confirmation from gmail
     console.log("email " + email);
     try {
 
@@ -451,12 +490,12 @@ async function emailfunc(email, sujet, msg) {
     }
 }
 
-//Pour platf
-app.post('/click', function (req, res) {
+
+app.post('/click', function(req, res) {
     console.log(req.body.highscore)
     console.log(req.body.qui)
     console.log(req.body.username)
-    connection.query(`UPDATE \`accounts\` SET ${req.body.qui} = ${req.body.highscore} WHERE username = '${req.body.username}';`, function (error, results, fields) {
+    connection.query(`UPDATE \`accounts\` SET ${req.body.qui} = ${req.body.highscore} WHERE username = '${req.body.username}';`, function(error, results, fields) {
         // If there is an issue with the query, output the error"
         if (error) {
             console.log(error);
@@ -465,8 +504,8 @@ app.post('/click', function (req, res) {
     });
 })
 
-//highscore post
-app.post('/highscore', function (req, res) {
+
+app.post('/highscore', function(req, res) {
     // Capture the input fields
     var highscore = Number(req.body.highscore);
     var qui = validate(req.body.qui);
@@ -474,7 +513,7 @@ app.post('/highscore', function (req, res) {
 
     console.log("High")
 
-    connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function (error, results, fields) {
+    connection.query(`SELECT ${qui} FROM \`accounts\` WHERE username = '${username}'`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) {
             console.log(error);
@@ -496,7 +535,7 @@ app.post('/highscore', function (req, res) {
 
         if (iffe) {
             //UPDATE `accounts` SET snake = 0 WHERE username = 'localhost';
-            connection.query(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`, function (error, results, fields) {
+            connection.query(`UPDATE \`accounts\` SET ${qui} = ${highscore} WHERE username = '${username}';`, function(error, results, fields) {
                 // If there is an issue with the query, output the error"
                 if (error) {
                     console.log(error);
@@ -515,7 +554,7 @@ app.post('/highscore', function (req, res) {
 });
 
 
-const cheerio = require('cheerio'); // Basically cheerio for node.js
+const cheerio = require('cheerio');
 
 var highscoretableaucomplet = {
     "username": ["", ""],
@@ -527,10 +566,10 @@ var highscoretableaucomplet = {
 
 var count = 0;
 
-app.post('/gg', function (req, res) {
-    console.log("postgg") //Post request gg
+app.post('/gg', function(req, res) {
+    console.log("postgg")
 
-    connection.query(`SELECT username,snake,tetris,brick,highscore1 FROM accounts`, function (error, results, fields) {
+    connection.query(`SELECT username,snake,tetris,brick,highscore1 FROM accounts`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) {
             console.log(error);
@@ -554,17 +593,17 @@ app.post('/gg', function (req, res) {
 
 });
 
-app.get('/gg', function (req, res) {
-    //Const data
+app.get('/gg', function(req, res) {
+
     const data = `<!DOCTYPE html>
     <html>
     
     <head>
         <meta charset="utf-8">
-        <meta name="viewport" charset="UTF-8" content="width=device-width, initial-scale=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>GG</title>
         <script src="./js/gg.js"></script>
-        <link href="./css/strap5.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     
     </head>
     
@@ -594,11 +633,14 @@ app.get('/gg', function (req, res) {
 
     const $ = cheerio.load(data);
 
-    for (i = 0; i < count; i++) {
-
-
+    for (i = -1; i < count; i++) {
+        if (i == -1) {
+            console.log("I")
+            highscoretableaucomplet.snake = (highscoretableaucomplet.snake).sort()
+        }
+        if (highscoretableaucomplet.snake[i] !== 0 && i !== -1) {
             $('table').append(`<tr><td>${highscoretableaucomplet.username[i]}</td><td>${highscoretableaucomplet.snake[i]}</td><td>${highscoretableaucomplet.tetris[i]}</td><td>${highscoretableaucomplet.brick[i]}</td><td>${highscoretableaucomplet.highscore1[i]}</td></tr>`);
-        
+        }
     }
 
     res.send($.html());
@@ -609,18 +651,16 @@ app.get('/gg', function (req, res) {
 
 });
 
-const io = require("socket.io")(server);
-
-// server-side
+const io = require("socket.io")(server)
+    // server-side
 io.on("connection", (socket) => {
     // console.log("Connection:" + socket.id); // x8WIv7-mJelg7on_ALbx
 
     socket.conn.on("upgrade", () => {
-        const upgradedTransport = socket.conn.transport.name;
-        console.log(upgradedTransport) // ws
+        const upgradedTransport = socket.conn.transport.name; // in most cases, "websocket"
+        console.log(upgradedTransport)
     });
 
-    //Message from client (chat)
     socket.on("msg", (username, msg) => {
         io.to("chat").emit("helloserv", username, validate(msg));
     });
@@ -665,24 +705,11 @@ io.on("connection", (socket) => {
 
 });
 
-// Render chat en EJS
+// Render chat
 app.set('view engine', 'ejs')
 
 
-app.get('/updatepass', function (req, res) {
-
-    if (req.session.loggedin) {
-
-        res.sendFile(path.join(__dirname + '/Page web/manage.html'));
-
-    } else {
-        // Render login template
-        res.redirect('/login')
-    }
-});
-
-//Post pour update password.
-app.post('/updatepass', function (req, res) {
+app.post('/updatepass', function(req, res) {
 
     let username = validate(req.body.username);
     let password = hash3(req.body.password);
@@ -696,7 +723,7 @@ app.post('/updatepass', function (req, res) {
     }
 
 
-    connection.query(`UPDATE accounts SET password=\'${password}\' WHERE username =\'${username}\';`, function (error, results, fields) {
+    connection.query(`UPDATE accounts SET password=\'${password}\' WHERE username =\'${username}\';`, function(error, results, fields) {
         // If there is an issue with the query, output the error
         if (error) {
             console.log(error);
@@ -705,7 +732,7 @@ app.post('/updatepass', function (req, res) {
         // If the account exists
 
         if (results.protocol41 == true) {
-            res.send("Account update");
+
         } else {
             res.redirect("/manage")
         }
@@ -714,20 +741,19 @@ app.post('/updatepass', function (req, res) {
 
 });
 
-//Supprimer son compte
-app.delete('/deleteaccount', function (req, res) {
+app.delete('/deleteaccount', function(req, res) {
 
     let username = validate(req.body.username);
     let password = hash3(req.body.password);
     console.log("deleteaccount : " + username + "   " + password)
     if (username && password || username != undefined || password != undefined) {
-        connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function (error, results, fields) {
+        connection.query(`SELECT * FROM accounts WHERE username = '${username}' AND password = '${password}'`, function(error, results, fields) {
             if (error) {
                 console.log(error);
                 return res.status(500).json(error);
             }
             if (results.length > 0) {
-                connection.query(`DELETE FROM accounts WHERE username = '${username}'`, function (error, results, fields) {
+                connection.query(`DELETE FROM accounts WHERE username = '${username}'`, function(error, results, fields) {
                     if (error) {
                         console.log(error);
                         return res.status(500).json(error);
@@ -748,8 +774,7 @@ app.delete('/deleteaccount', function (req, res) {
 
 });
 
-//Page pour manager son compte
-app.get('/manage', function (req, res) {
+app.get('/manage', function(req, res) {
 
     if (req.session.loggedin) {
         let usernames = req.session.username;
@@ -765,8 +790,9 @@ app.get('/manage', function (req, res) {
 
 });
 
-//Chat avec socket.io
-app.get('/chat', function (req, res) {
+
+
+app.get('/chat', function(req, res) {
     if (req.session.loggedin) {
 
         res.render('chat');
@@ -778,8 +804,7 @@ app.get('/chat', function (req, res) {
 
 });
 
-//Page pour get le username
-app.get('/username', function (req, res) {
+app.get('/username', function(req, res) {
 
     if (req.session.loggedin) {
 
@@ -793,18 +818,16 @@ app.get('/username', function (req, res) {
 
 });
 
-//Tetris
-app.get('/tetris', function (req, res) {
+app.get('/tetris', function(req, res) {
+
     p(res, req, "tetris");
 });
 
-//Page de qui tape le + vite
-app.get('/court', function (req, res) {
+app.get('/court', function(req, res) {
     p(res, req, "court");
 });
 
-//Snake
-app.get('/snake', function (req, res) {
+app.get('/snake', function(req, res) {
     if (req.session.loggedin) {
         res.sendFile(path.join(__dirname + '/Page web/snake.html'));
     } else {
@@ -815,7 +838,7 @@ app.get('/snake', function (req, res) {
 });
 
 //Tower Defense
-app.get('/td', function (req, res) {
+app.get('/td', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/td/index.html'));
@@ -828,7 +851,7 @@ app.get('/td', function (req, res) {
 });
 
 //casse brick
-app.get('/brick', function (req, res) {
+app.get('/brick', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/brick/index.html'));
@@ -841,7 +864,7 @@ app.get('/brick', function (req, res) {
 });
 
 //UNdertale game
-app.get('/undertale', function (req, res) {
+app.get('/undertale', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/undertale/index.html'));
@@ -854,7 +877,7 @@ app.get('/undertale', function (req, res) {
 });
 
 //Game pong
-app.get('/pong', function (req, res) {
+app.get('/pong', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/pong/index.html'));
@@ -867,7 +890,7 @@ app.get('/pong', function (req, res) {
 });
 
 //Page de suggestion
-app.post('/envoie', function (req, res) {
+app.post('/envoie', function(req, res) {
 
     let info = req.body.info;
 
@@ -884,7 +907,7 @@ app.post('/envoie', function (req, res) {
 });
 
 //Page de suggestion
-app.get('/envoie', function (req, res) {
+app.get('/envoie', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/envoie.html'));
@@ -897,14 +920,14 @@ app.get('/envoie', function (req, res) {
 });
 
 //Les game ? (en dev)
-app.get('/game', function (req, res) {
+app.get('/game', function(req, res) {
 
     res.sendFile(path.join(__dirname + '/Page web/game.html'));
 
 });
 
 // Une partie de Remastered SuperWorld Jojo
-app.get('/world', function (req, res) {
+app.get('/world', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/world/index.html'));
@@ -917,7 +940,7 @@ app.get('/world', function (req, res) {
 });
 
 //Jeux en dev
-app.get('/tour', function (req, res) {
+app.get('/tour', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/tourpartour/index.html'));
@@ -930,13 +953,13 @@ app.get('/tour', function (req, res) {
 });
 
 // Truc de jeu
-app.get('/jeuto', function (req, res) {
+app.get('/jeuto', function(req, res) {
 
     res.redirect("https://gamejolt.com/@ToniPortal/games")
 
 });
 
-app.get('/platf', function (req, res) {
+app.get('/platf', function(req, res) {
     if (req.session.loggedin) {
 
         res.sendFile(path.join(__dirname + '/Page web/tourpartour/index.html'));
@@ -949,43 +972,43 @@ app.get('/platf', function (req, res) {
 });
 
 
-app.get('/404', function (req, res, next) {
+app.get('/404', function(req, res, next) {
     // trigger a 404 since no other middleware
     // will match /404 after this one, and we're not
     // responding here
     next();
 });
 
-app.get('/403', function (req, res, next) {
+app.get('/403', function(req, res, next) {
     // trigger a 403 error
     var err = new Error('not allowed!');
     err.status = 403;
     next(err);
 });
 
-app.get('/500', function (req, res, next) {
+app.get('/500', function(req, res, next) {
     // trigger a generic (500) error
     next(new Error('keyboard cat!'));
 });
 
-app.use(function (req, res, next) {
+app.use(function(req, res, next) {
     res.status(404);
 
     res.format({
-        html: function () {
+        html: function() {
             res.render('404', { url: req.url })
         },
-        json: function () {
+        json: function() {
             res.json({ error: 'Not found' })
         },
-        default: function () {
+        default: function() {
             res.type('txt').send('Not found')
         }
     })
 });
 
 //500 error render
-app.use(function (err, req, res, next) {
+app.use(function(err, req, res, next) {
     res.status(err.status || 500);
     res.render('500', { error: err });
 });
