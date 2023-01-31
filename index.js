@@ -920,10 +920,17 @@ app.get('/envoie', function(req, res) {
 
 });
 
-//Les game ? (en dev)
+//Game(fnf)(en dev trop complexe)
 app.get('/game', function(req, res) {
 
     res.sendFile(path.join(__dirname + '/Page web/game.html'));
+
+});
+
+//Game1 (en dev)
+app.get('/game1', function(req, res) {
+
+    res.sendFile(path.join(__dirname + '/Page web/game1.html'));
 
 });
 
@@ -940,25 +947,6 @@ app.get('/world', function(req, res) {
 
 });
 
-//Jeux en dev
-app.get('/tour', function(req, res) {
-    if (req.session.loggedin) {
-
-        res.sendFile(path.join(__dirname + '/Page web/tourpartour/index.html'));
-
-    } else {
-        // Pas connectée.
-        res.redirect("/login")
-    }
-
-});
-
-// Truc de jeu
-app.get('/jeuto', function(req, res) {
-
-    res.redirect("https://gamejolt.com/@ToniPortal/games")
-
-});
 
 app.get('/platf', function(req, res) {
     if (req.session.loggedin) {

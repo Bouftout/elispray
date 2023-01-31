@@ -41,11 +41,25 @@ function create() {
 
     var blockB = this.matter.add.image(600, 300, 'block').setStatic(true);
 
+    var bubble1 = this.createSpeechBubble(20, 180, 220, 80, "Touché !");
+
+    let toucheb1 = 0;
+
     this.matter.world.on('collisionstart', function(event, bodyA, bodyB) {
 
-        console.log("collisionstart");
+        
 
     });
+
+
+    this.input.keyboard.on('keydown-SPACE', function (event) {
+
+        event.stopPropagation();
+
+        bubble1.setVisible(true);
+
+    });
+
 }
 
 //  The update function is passed 2 values:
@@ -59,4 +73,5 @@ function update(time, delta) {
     if (bullet2.x > 864) {
         bullet2.x = 64;
     }
+    console.log(bullet2.x)
 }
