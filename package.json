@@ -47,7 +47,7 @@
         "sanitize-html": "^2.7.0",
         "socket.io": "^4.4.1",
         "validator": "^13.7.0",
-        "xxhash-addon": "^1.4.0"
+        "xxhash-addon": "^1.5.0"
     },
     "optionalDependencies": {
         "bufferutil": "^4.0.6",
